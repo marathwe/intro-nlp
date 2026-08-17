@@ -8,6 +8,8 @@ format:
     slide-number: true
     chalkboard: true
     theme: [default, ../styles/slides.scss]
+execute:
+  eval: false
 ---
 
 ## Introduction {.smaller}
@@ -19,55 +21,115 @@ format:
 
 ## What is Natural Language Processing?
 
-<!-- TODO: port intro/definition content from ../IF/slides/first_day_final.Rmd (lines ~121-161) -->
+- Interdisciplinary field between computer science and linguistics
+- Aims to quantitatively represent text so computers can "understand" it
+- Applications across sociology, political science, industry
+- Growing digital trace data → NLP is now transformative for daily life
 
 ## Let's talk a bit about Wikipedia
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~133-161) -->
+- Free encyclopedia, volunteer-edited, hosted by Wikimedia since 2001
+- Reflects — and shapes — our contemporary knowledge production
+- What's written on Wikipedia influences media, research, and real-life
+  decisions
+- Editors skew male; political & interest groups actively edit pages
 
 # Web Scraping
 
-## Scraping HTML tables
+## Static vs. dynamic scraping
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~162-233) -->
+- **Static**: scrape the rendered HTML of a page (e.g. `rvest`)
+- **Dynamic**: query an API directly (usually more efficient — no HTML
+  parsing needed)
 
 ```{r}
-#| eval: false
 #| echo: true
-# Define the URL of the page we want to scrape
-# Extract the table from the page
+library(pacman); pacman::p_load("rvest", "tidyverse")
+
+url <- read_html("https://en.wikipedia.org/wiki/List_of_Nobel_laureates")
+nobel_table <- url %>% html_node("table") %>% html_table()
 ```
 
 ## The Wikipedia API
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~234-326) -->
+1. Connect to the API URL, e.g. `en.wikipedia.org/w/api.php`
+2. Send an HTTP GET request with parameters
+3. Retrieve a response, usually JSON
+
+```{r}
+#| echo: true
+library(httr2)
+# request(baseurl) %>%
+#   req_user_agent(...) %>%
+#   req_url_query(!!!params) %>%
+#   req_perform()
+```
 
 ## Using R wrappers: `WikipediR`, `wikkitidy`
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~326-368) -->
+- Wrappers hide the raw HTTP/JSON plumbing
+- `WikipediR::page_content()` fetches page HTML in one call
+- Still need `XML::htmlParse()` + `readHTMLTable()` to extract tables
+
+## Task {.smaller}
+
+- Scrape biographies of female & male Nobel laureates (dynamic or
+  static)
+- Use the Wikipedia category structure:
+  [Category: Lists of Nobel laureates](https://en.wikipedia.org/wiki/List_of_female_Nobel_laureates)
+- Hint: `pages_in_category()` (WikipediR) + pivot/join against the
+  scraped table for the male laureates
 
 # Data Preparation & Preprocessing
 
 ## Data preparation
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~369-432) -->
+- Provided data set: `pageid`, `title`, `extract`, `revision`, `gender`
+- Only ~4.6% of Nobel prizes went to women — striking imbalance
+- **Task**: import, drop NAs, rename/select columns, filter to female
+  rows
 
 ## Text preprocessing: tokenization
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~433-510) -->
+- **Corpus** → documents → sentences → terms
+- Tokenization, lowercasing, removing punctuation/stopwords,
+  stemming/lemmatization
+- We use [quanteda](https://quanteda.io/)
 
 ![Text analysis workflow](../images/text-analysis-workflow.jpg)
 
 ## The Document-Feature Matrix (DFM)
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~511-645) -->
+- Rows = documents, columns = terms, cells = frequency
+- Bag-of-words assumptions: word order & grammar don't matter, only
+  presence/frequency
+- Gets sparse fast → trim rare/frequent terms
 
 ![DFM example](../images/dfm-example.jpg)
 
-## tf-idf weighting & descriptive analysis
+## tf-idf weighting
 
-<!-- TODO: port from ../IF/slides/first_day_final.Rmd (lines ~646-705) -->
+$$TF\text{-}IDF = TF \times \ln\!\left(\frac{N}{\text{docs containing } t}\right)$$
+
+- Raw counts assume every word is equally important — usually false
+- tf-idf up-weights words that are frequent *in a document* but rare
+  *across the corpus*
+- `dfm_trim()` + `dfm_tfidf()` in quanteda
+
+## Task: hand-calculate a DFM {.smaller}
+
+- d1: "The quick brown fox" / d2: "The lazy dog"
+- Compute counts → TF → DF → IDF → TF-IDF by hand
+- Then verify with `dfm()` + `dfm_tfidf()` in quanteda
+
+## Descriptive analysis
+
+- Word clouds (`quanteda.textplots::textplot_wordcloud()`)
+- Frequency plots (`quanteda.textstats::textstat_frequency()`)
+- Compare female vs. male corpora — what differs?
 
 ## Task {.smaller}
 
-<!-- TODO: port hands-on task from ../IF/slides/first_day_final.Rmd -->
+- Build separate corpora for female/male winners
+- Preprocess (tokenize, lowercase, strip punctuation/stopwords, stem)
+- Build a DFM for each and compare descriptive statistics

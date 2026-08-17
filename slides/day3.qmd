@@ -8,69 +8,127 @@ format:
     slide-number: true
     chalkboard: true
     theme: [default, ../styles/slides.scss]
+execute:
+  eval: false
 ---
 
 ## Recap: Supervised Learning
 
-<!-- TODO: short recap of dictionaries / Naive Bayes / model evaluation from Day 2 -->
-
-## Naive Bayes Classification (continued)
-
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~15-171), largely mirrors second_day.Rmd -->
-
-## Task {.smaller}
-
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~171-184) -->
+- Naive Bayes, dictionaries, train/test split, precision/recall/F1
+- Class imbalance can inflate accuracy while hiding poor recall
 
 # Word Embeddings
 
 ## What are word embeddings?
 
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~237-274) -->
+- "You shall know a word by the company it keeps" (Firth, 1957)
+- Represent each word as a dense vector; similar meaning → nearby
+  vectors
+- Pre-trained on huge corpora: Word2Vec, GloVe, fastText
+- **Window size** = how many words of context count around a target
+  word
 
-## Loading GloVe embeddings & nearest neighbors
+## How are they trained?
+
+- Model predicts a masked word from context ("the ___ chased the ball")
+- Compares its guess to the real word, updates weights via gradient
+  descent
+- Words that co-occur often end up with nearby vectors
+
+## Loading embeddings & nearest neighbors
 
 ```{r}
-#| eval: false
 #| echo: true
-# path to your embeddings file
-# Read Glove file (no header line, unlike fastText)
-# Split into words + vectors
-# Example: look up vector for "dog"
+library(data.table)
+emb <- fread("path/to/embeddings.txt", header = FALSE, quote = "")
+words <- emb[[1]]
+glove <- as.matrix(emb[, -1, with = FALSE])
+rownames(glove) <- words
+
+glove["dog", ]   # look up a word's vector
 ```
 
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~260-355) -->
+```{r}
+#| echo: true
+library(text2vec)
+sims <- sim2(glove, matrix(glove["woman", ], nrow = 1))
+names(sort(sims[, 1], decreasing = TRUE))[1:7]
+```
 
 ## Visualization
 
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~356-374) -->
+- Reduce embedding dimensions (PCA) down to 2 for plotting
+- Closer points ≈ closer meaning
+
+```{r}
+#| echo: true
+Z <- prcomp(glove[c("einstein","curie","nobel","peace"), ])$x[, 1:2]
+```
 
 # Large Language Models
 
 ## What are Large Language Models?
 
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~375-445) -->
+- Deep learning models trained on vast text corpora to model language
+- **Foundation models** → pre-trained, general-purpose
+- **LLMs** → foundation models specialized for language tasks
+- **Fine-tuning** vs. **prompting** (zero-shot / few-shot)
+- Prefer prompting first — fine-tuning is costly and data-hungry
+
+## Why are LLMs so powerful?
+
+- All LLMs are transformer models
+- **Attention** — weighs the importance of each word when predicting
+  the next one
+- Captures long-range dependencies better than RNNs/LSTMs
+
+## Feedforward neural networks
+
+- Information flows one direction: input → hidden layer(s) → output
+- No cycles; every node connects to every node in the next layer,
+  each connection weighted
+
+![Feedforward neural network](../images/feedforward-nn.jpg)
 
 ## Transformer Models
 
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~446-465) -->
+- Stack of encoders + decoders
+- Encoder: self-attention + feedforward layers → rich input
+  representation
+- Decoder: generates output using that representation, also via
+  self-attention
+- Trained via next-word prediction & masked-word prediction
 
 ![Transformer model](../images/transformer-model.png)
 
-![Neural network](../images/neural-network.png)
-
 ## Running local LLMs with Ollama
 
-<!-- TODO: port from ../IF/slides/day_three.Rmd (lines ~466-561) -->
+- [Ollama](https://ollama.com/) runs open LLMs (e.g. Llama) locally
+- No cloud dependency, full control over the model
 
 ```{r}
-#| eval: false
 #| echo: true
-# library(rollama)
-# available models you have installed locally
-# pull_model("mistral:7B") # download a model
+library(rollama)
+list_models()
+ping_ollama()
+```
+
+## System vs. user prompts
+
+- **System prompt** — assigns a role & constraints ("You are a
+  research assistant…")
+- **User prompt** — the task-specific instruction + content
+
+```{r}
+#| echo: true
+question <- "Task: classify whether this biography summary
+  describes a female or male Nobel laureate."
+query(paste(question, df$extract[1]), model = "llama3.1")
 ```
 
 ## Task {.smaller}
 
-<!-- TODO: port hands-on task from ../IF/slides/day_three.Rmd (lines ~562+) -->
+- Zero-shot classify a handful of biography summaries by gender using
+  `rollama`
+- Compare the LLM's predictions to the Naive Bayes classifier from
+  Day 2 — where do they agree/disagree, and why?
