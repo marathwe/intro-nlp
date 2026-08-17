@@ -6,8 +6,8 @@ subtitle: "Informatica Feminale Summer School"
 ## Welcome
 
 Welcome to **Introduction to Natural Language Processing**! This course
-runs over three days and introduces you to collecting, preprocessing,
-and analyzing text data using R.
+runs over 1.5 days and introduces you to collecting, preprocessing, and
+analyzing text data using R.
 
 If you have any inquiries, questions, feedback, or just want a pleasant
 chat, please do not hesitate to reach out. I'm always happy to respond
@@ -15,13 +15,12 @@ and help as best I can: [mara.weber\@ucl.ac.uk](mailto:mara.weber@ucl.ac.uk).
 
 ## What we'll cover
 
-- **Day 1** — Web scraping, working with the Wikipedia API, text
-  preprocessing, tokenization, and the document-feature matrix (DFM).
-- **Day 2** — Unsupervised learning (topic modeling with LDA) and an
-  introduction to supervised learning for text classification.
-- **Day 3** — Dictionaries and Naive Bayes classification, word
-  embeddings, and an introduction to large language models (LLMs) and
-  transformer models.
+- **Day 1 (full day)** — Web scraping, working with the Wikipedia API,
+  text preprocessing, tokenization, and the document-feature matrix
+  (DFM).
+- **Day 2 (half day)** — Dictionaries and Naive Bayes classification,
+  word embeddings, and an introduction to large language models (LLMs)
+  and transformer models.
 
 See the [Schedule](schedule.qmd) for the day-by-day breakdown, or jump
 straight to the [Slides](slides/day1.qmd) or [Notes](notes/day1.qmd).

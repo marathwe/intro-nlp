@@ -20,19 +20,15 @@ website:
       - text: Slides
         menu:
           - href: slides/day1.qmd
-            text: "Day 1: Scraping & Text Preprocessing"
+            text: "Day 1 (full day): Scraping & Text Preprocessing"
           - href: slides/day2.qmd
-            text: "Day 2: Topic Modeling & Classification"
-          - href: slides/day3.qmd
-            text: "Day 3: Embeddings & LLMs"
+            text: "Day 2 (half day): Supervised Learning, Embeddings & LLMs"
       - text: Notes
         menu:
           - href: notes/day1.qmd
-            text: "Day 1: Scraping & Text Preprocessing"
+            text: "Day 1 (full day): Scraping & Text Preprocessing"
           - href: notes/day2.qmd
-            text: "Day 2: Topic Modeling & Classification"
-          - href: notes/day3.qmd
-            text: "Day 3: Embeddings & LLMs"
+            text: "Day 2 (half day): Supervised Learning, Embeddings & LLMs"
       - href: assignments/index.qmd
         text: Assignment
       - href: resources.qmd

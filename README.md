@@ -9,7 +9,7 @@ Feminale Summer School). Built with [Quarto](https://quarto.org/).
 .
 ├── index.qmd            # home page
 ├── schedule.qmd          # day-by-day schedule
-├── slides/               # revealjs slide decks (day1.qmd, day2.qmd, day3.qmd)
+├── slides/               # revealjs slide decks (day1.qmd = full day, day2.qmd = half day)
 ├── notes/                # prose lecture notes matching the slides
 ├── assignments/          # credit-point assignment description
 ├── resources.qmd         # literature & R package references
