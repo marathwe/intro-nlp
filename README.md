@@ -7,7 +7,6 @@ Feminale Summer School). Built with [Quarto](https://quarto.org/).
 
 ```
 .
-├── IF/                  # last year's raw material — archive, gitignored, never published
 ├── index.qmd            # home page
 ├── schedule.qmd          # day-by-day schedule
 ├── slides/               # revealjs slide decks (day1.qmd, day2.qmd, day3.qmd)
@@ -20,9 +19,13 @@ Feminale Summer School). Built with [Quarto](https://quarto.org/).
 └── .github/workflows/     # GitHub Actions: render + publish to GitHub Pages
 ```
 
+Last year's raw course material lives one level up, at `../IF/` (a
+sibling of this repo, not inside it) — it's a personal archive, never
+published as-is.
+
 Most `slides/*.qmd` and `notes/*.qmd` files currently contain `<!-- TODO -->`
-placeholders pointing at the exact lines in `IF/scripts/all_notes.Rmd` and
-`IF/slides/*.Rmd` to port over — treat them as a checklist.
+placeholders pointing at the exact lines in `../IF/scripts/all_notes.Rmd` and
+`../IF/slides/*.Rmd` to port over — treat them as a checklist.
 
 ## Local setup
 
@@ -52,8 +55,8 @@ activate it:
 
 ## Data & privacy
 
-`IF/` is gitignored on purpose: it holds personal documents
-(`IF/orga/`) and datasets with redistribution restrictions
-(`IF/data/ESS_2018_all_kurz.dta`). Only copy specific, cleared files out
-of `IF/` into `images/`, `data/`, or content pages as needed — see
+`../IF/` lives outside this repo on purpose: it holds personal documents
+(`../IF/orga/`) and datasets with redistribution restrictions
+(`../IF/data/ESS_2018_all_kurz.dta`). Only copy specific, cleared files out
+of `../IF/` into `images/`, `data/`, or content pages as needed — see
 `data/README.md`.

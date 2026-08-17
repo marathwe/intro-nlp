@@ -5,32 +5,32 @@ subtitle: "Scraping & Text Preprocessing"
 
 ::: {.callout-note}
 These notes accompany the [Day 1 slides](../slides/day1.qmd). Full prose
-content still needs to be ported over from `IF/scripts/all_notes.Rmd`
+content still needs to be ported over from `../IF/scripts/all_notes.Rmd`
 (lines 92–705, covering NLP intro through descriptive analysis) — see
 the TODOs below as a porting checklist.
 :::
 
 ## What is Natural Language Processing (NLP)?
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~92-101) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~92-101) -->
 
 ## Web Scraping
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~131-314), including
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~131-314), including
      the HTML table scraping, API, and WikipediR/wikkitidy wrapper sections -->
 
 ## Data Preparation
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~315-360) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~315-360) -->
 
 ## Text Preprocessing
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~361-415) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~361-415) -->
 
 ## The Document-Feature Matrix (DFM)
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~416-584) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~416-584) -->
 
 ## Descriptive Analysis
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~595-684) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~595-684) -->

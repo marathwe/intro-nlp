@@ -18,17 +18,17 @@ format:
 
 ## What is unsupervised learning?
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~56-78) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~56-78) -->
 
 ## What is Topic Modeling?
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~79-139) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~79-139) -->
 
 ![LDA topic model](../images/lda-topicmodel.jpg)
 
 ## Key concepts
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~98-139) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~98-139) -->
 
 ## Fitting an LDA model
 
@@ -44,26 +44,26 @@ format:
 
 ## Task: Female and Male Topic Models
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~171-237) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~171-237) -->
 
 # Supervised Learning
 
 ## From unsupervised to supervised
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~238-296) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~238-296) -->
 
 ## Dictionaries
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~297-339) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~297-339) -->
 
 ## Naive Bayes Classification
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~340-367) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~340-367) -->
 
 ## Model evaluation
 
-<!-- TODO: port from IF/slides/second_day.Rmd (lines ~368-386) -->
+<!-- TODO: port from ../IF/slides/second_day.Rmd (lines ~368-386) -->
 
 ## Task {.smaller}
 
-<!-- TODO: port hands-on tasks from IF/slides/second_day.Rmd (lines ~387-401) -->
+<!-- TODO: port hands-on tasks from ../IF/slides/second_day.Rmd (lines ~387-401) -->

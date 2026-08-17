@@ -1,5 +1,6 @@
-# Raw archive of last year's course material — never publish as-is
-# (contains personal documents in IF/orga/ and restricted data in IF/data/)
+# Raw archive of last year's course material lives at ../IF (one level
+# up, outside this repo) — personal documents and restricted data live
+# there. This rule is a safety net in case it's ever copied back in.
 IF/
 
 # Quarto

@@ -6,7 +6,6 @@ project:
     - "slides/*.qmd"
     - "notes/*.qmd"
     - "assignments/*.qmd"
-    - "!IF/"
 
 website:
   title: "Introduction to NLP"

@@ -5,26 +5,26 @@ subtitle: "Embeddings & LLMs"
 
 ::: {.callout-note}
 These notes accompany the [Day 3 slides](../slides/day3.qmd). Full prose
-content still needs to be ported over from `IF/scripts/all_notes.Rmd`
+content still needs to be ported over from `../IF/scripts/all_notes.Rmd`
 (lines 1066–1324).
 :::
 
 ## Word Embeddings
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~1066-1180) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~1066-1180) -->
 
 ## Visualization
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~1181-1200) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~1181-1200) -->
 
 ## Large Language Models (LLMs)
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~1201-1271) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~1201-1271) -->
 
 ## Transformer Models
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~1272-1286) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~1272-1286) -->
 
 ## Running Local LLMs with Ollama
 
-<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~1287-1324) -->
+<!-- TODO: port from ../IF/scripts/all_notes.Rmd (lines ~1287-1324) -->

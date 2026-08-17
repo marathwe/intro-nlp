@@ -11,7 +11,7 @@ title: "Resources"
   new framework for machine learning and the social sciences.*
   Princeton, NJ: Princeton University Press.
 
-<!-- TODO: add remaining readings from IF/lit/ (gender_ceiling_wagner.pdf,
+<!-- TODO: add remaining readings from ../IF/lit/ (gender_ceiling_wagner.pdf,
      quanteda.textmodels.pdf, strohmaier_wagner_wiki.pdf, wikkitidy.pdf)
      with full citations. Link PDFs here if licensing allows redistribution,
      otherwise cite only. -->
@@ -29,6 +29,6 @@ title: "Resources"
 ## Setup
 
 New to R/RStudio? A "First Steps with R Studio" guide already exists at
-`IF/prelim/Erste_Schritte_mit_RStudio_eng.Rmd`.
+`../IF/prelim/Erste_Schritte_mit_RStudio_eng.Rmd`.
 <!-- TODO: port this into a setup.qmd page and link it here -->
-There's also an installation guide at `IF/slides/installation_guide.Rmd`.
+There's also an installation guide at `../IF/slides/installation_guide.Rmd`.
