@@ -1,8 +1,50 @@
 /*-- scss:defaults --*/
-$primary: #7b3f9e;
+// A softer, dustier plum/mauve rather than a bright, saturated purple.
+$primary:    #79516e;
 $link-color: $primary;
+$body-bg:    #fbf8fa;
+$body-color: #33272f;
+
+$sidebar-bg:        #f4eef1;
+$sidebar-hl:        #79516e;
+$sidebar-item-hover: rgba(121, 81, 110, 0.08);
 
 /*-- scss:rules --*/
 .navbar {
   font-weight: 500;
+}
+
+#quarto-sidebar {
+  background-color: $sidebar-bg;
+  border-right: 1px solid rgba(121, 81, 110, 0.12);
+}
+
+.sidebar-title {
+  color: $sidebar-hl;
+  font-weight: 700;
+}
+
+.sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  color: $sidebar-hl;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  opacity: 0.85;
+}
+
+.sidebar-item-text.sidebar-link {
+  color: $body-color;
+  border-radius: 0.25rem;
+}
+
+.sidebar-item-text.sidebar-link:hover {
+  color: $sidebar-hl;
+  background-color: $sidebar-item-hover;
+}
+
+.sidebar-item-text.sidebar-link.active {
+  color: $sidebar-hl;
+  font-weight: 600;
+  background-color: $sidebar-item-hover;
 }

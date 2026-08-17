@@ -11,34 +11,39 @@ website:
   title: "Introduction to NLP"
   site-url: ""
   description: "Informatica Feminale Summer School — Introduction to Natural Language Processing"
-  navbar:
-    left:
+  # TODO: once the GitHub repo exists, add a navbar with a GitHub icon:
+  # navbar:
+  #   right:
+  #     - icon: github
+  #       href: ""
+  #       text: GitHub
+
+  sidebar:
+    style: docked
+    search: true
+    contents:
       - href: index.qmd
         text: Home
       - href: setup.qmd
         text: Setup
       - href: schedule.qmd
         text: Schedule
-      - text: Slides
-        menu:
+      - section: "Slides"
+        contents:
           - href: slides/day1.qmd
-            text: "Day 1 (full day): Scraping & Text Preprocessing"
+            text: "Day 1 (full day)"
           - href: slides/day2.qmd
-            text: "Day 2 (half day): Supervised Learning, Embeddings & LLMs"
-      - text: Notes
-        menu:
+            text: "Day 2 (half day)"
+      - section: "Notes"
+        contents:
           - href: notes/day1.qmd
-            text: "Day 1 (full day): Scraping & Text Preprocessing"
+            text: "Day 1 (full day)"
           - href: notes/day2.qmd
-            text: "Day 2 (half day): Supervised Learning, Embeddings & LLMs"
+            text: "Day 2 (half day)"
       - href: assignments/index.qmd
         text: Assignment
       - href: resources.qmd
         text: Resources
-    # right:
-    #   - icon: github
-    #     href: "" # TODO: fill in once the GitHub repo exists
-    #     text: GitHub
 
   page-footer:
     center: "Introduction to NLP · Informatica Feminale Summer School · Mara Weber"
