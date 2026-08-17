@@ -1,0 +1,35 @@
+---
+title: "Assignment"
+subtitle: "Informatica Feminale Summer School (1 Credit Point)"
+---
+
+::: {.callout-important}
+Update the due date below before publishing this year's course site.
+:::
+
+It is possible to obtain a Credit Point by handing in a mini project.
+It is mandatory to schedule a meeting with the instructor beforehand.
+Choose one of the two options below.
+
+## Option 1: Scrape your own data
+
+Scrape your own data on Wikipedia and preprocess it accordingly.
+Justify why you chose exactly this data. Ideally, discuss potential
+research questions and methods that can be used with your data.
+
+## Option 2: Use the provided revision data set
+
+Use the revision data set, which contains all revisions from the
+"Britney Spears" Wikipedia article. Think about a possible research
+question and answer it with an appropriate method. Discuss why you
+chose that method and interpret the results.
+
+## What to hand in
+
+- A documented R script (`.R` or `.Rmd`)
+- A short PDF (1–3 pages) describing the data and outlining what you
+  did and why (Times New Roman, 12pt, 1.5 line spacing, page numbers,
+  and a consistent citation style)
+
+Please send the PDF via email by **[update due date]** (your local
+time zone).

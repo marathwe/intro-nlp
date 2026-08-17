@@ -1,0 +1,41 @@
+---
+title: "Schedule"
+---
+
+::: {.callout-note}
+Dates and times are placeholders — update once this year's schedule is
+confirmed.
+:::
+
+## Day 1 — Scraping & Text Preprocessing
+
+- What is Natural Language Processing (NLP)?
+- Working with Wikipedia: pages, categories, revisions
+- Web scraping: HTML tables, the Wikipedia API, and R wrappers
+  (`WikipediR`, `wikkitidy`)
+- Data preparation and cleaning
+- Text preprocessing: tokenization, stopwords, stemming
+- The document-feature matrix (DFM) and tf-idf weighting
+
+[Slides](slides/day1.qmd) · [Notes](notes/day1.qmd)
+
+## Day 2 — Topic Modeling & Classification
+
+- Unsupervised vs. supervised learning
+- Topic modeling with Latent Dirichlet Allocation (LDA)
+- Interpreting topics and topic proportions
+- Introduction to supervised learning for text
+- Dictionaries and Naive Bayes classification
+- Model evaluation
+
+[Slides](slides/day2.qmd) · [Notes](notes/day2.qmd)
+
+## Day 3 — Embeddings & LLMs
+
+- Naive Bayes classification and model evaluation (continued)
+- Word embeddings (GloVe) and nearest-neighbor search
+- Visualizing embeddings
+- Large language models (LLMs) and the transformer architecture
+- Running local LLMs with Ollama
+
+[Slides](slides/day3.qmd) · [Notes](notes/day3.qmd)

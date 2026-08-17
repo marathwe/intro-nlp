@@ -1,0 +1,76 @@
+---
+title: "Day Three"
+subtitle: "Introduction to Natural Language Processing"
+author: "Mara Weber"
+date: today
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: true
+    theme: [default, ../styles/slides.scss]
+---
+
+## Recap: Supervised Learning
+
+<!-- TODO: short recap of dictionaries / Naive Bayes / model evaluation from Day 2 -->
+
+## Naive Bayes Classification (continued)
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~15-171), largely mirrors second_day.Rmd -->
+
+## Task {.smaller}
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~171-184) -->
+
+# Word Embeddings
+
+## What are word embeddings?
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~237-274) -->
+
+## Loading GloVe embeddings & nearest neighbors
+
+```{r}
+#| eval: false
+#| echo: true
+# path to your embeddings file
+# Read Glove file (no header line, unlike fastText)
+# Split into words + vectors
+# Example: look up vector for "dog"
+```
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~260-355) -->
+
+## Visualization
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~356-374) -->
+
+# Large Language Models
+
+## What are Large Language Models?
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~375-445) -->
+
+## Transformer Models
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~446-465) -->
+
+![Transformer model](../images/transformer-model.png)
+
+![Neural network](../images/neural-network.png)
+
+## Running local LLMs with Ollama
+
+<!-- TODO: port from IF/slides/day_three.Rmd (lines ~466-561) -->
+
+```{r}
+#| eval: false
+#| echo: true
+# library(rollama)
+# available models you have installed locally
+# pull_model("mistral:7B") # download a model
+```
+
+## Task {.smaller}
+
+<!-- TODO: port hands-on task from IF/slides/day_three.Rmd (lines ~562+) -->

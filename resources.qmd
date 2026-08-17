@@ -1,0 +1,34 @@
+---
+title: "Resources"
+---
+
+## Literature
+
+- Berryman, J. and Ziegler, A. (2024) *Prompt engineering for LLMs: The
+  art and science of building large language model–based applications.*
+  Sebastopol, CA: O'Reilly Media.
+- Grimmer, J., Roberts, M.E. and Stewart, B.M. (2022) *Text as data: A
+  new framework for machine learning and the social sciences.*
+  Princeton, NJ: Princeton University Press.
+
+<!-- TODO: add remaining readings from IF/lit/ (gender_ceiling_wagner.pdf,
+     quanteda.textmodels.pdf, strohmaier_wagner_wiki.pdf, wikkitidy.pdf)
+     with full citations. Link PDFs here if licensing allows redistribution,
+     otherwise cite only. -->
+
+## R packages used in this course
+
+- [tidyverse](https://www.tidyverse.org/) — data wrangling
+- [quanteda](https://quanteda.io/) — corpus, tokens, DFM, tf-idf
+- [quanteda.textmodels](https://cran.r-project.org/package=quanteda.textmodels) — Naive Bayes and other text models
+- [quanteda.textstats](https://cran.r-project.org/package=quanteda.textstats) / [quanteda.textplots](https://cran.r-project.org/package=quanteda.textplots) — descriptive stats & plots
+- [WikipediR](https://cran.r-project.org/package=WikipediR) / [wikkitidy](https://cran.r-project.org/package=wikkitidy) — Wikipedia API wrappers
+- [httr2](https://httr2.r-lib.org/) — HTTP requests / custom API calls
+- [rollama](https://jbgruber.github.io/rollama/) — talk to local LLMs via [Ollama](https://ollama.com/)
+
+## Setup
+
+New to R/RStudio? A "First Steps with R Studio" guide already exists at
+`IF/prelim/Erste_Schritte_mit_RStudio_eng.Rmd`.
+<!-- TODO: port this into a setup.qmd page and link it here -->
+There's also an installation guide at `IF/slides/installation_guide.Rmd`.

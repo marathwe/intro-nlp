@@ -1,0 +1,73 @@
+---
+title: "Day One"
+subtitle: "Introduction to Natural Language Processing"
+author: "Mara Weber"
+date: today
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: true
+    theme: [default, ../styles/slides.scss]
+---
+
+## Introduction {.smaller}
+
+- If you have any inquiries, questions, feedback, or just want a pleasant
+  chat, please don't hesitate to reach out.
+- Email: [mara.weber\@ucl.ac.uk](mailto:mara.weber@ucl.ac.uk)
+- Credit points: hand in a mini project (see [Assignment](../assignments/index.qmd))
+
+## What is Natural Language Processing?
+
+<!-- TODO: port intro/definition content from IF/slides/first_day_final.Rmd (lines ~121-161) -->
+
+## Let's talk a bit about Wikipedia
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~133-161) -->
+
+# Web Scraping
+
+## Scraping HTML tables
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~162-233) -->
+
+```{r}
+#| eval: false
+#| echo: true
+# Define the URL of the page we want to scrape
+# Extract the table from the page
+```
+
+## The Wikipedia API
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~234-326) -->
+
+## Using R wrappers: `WikipediR`, `wikkitidy`
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~326-368) -->
+
+# Data Preparation & Preprocessing
+
+## Data preparation
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~369-432) -->
+
+## Text preprocessing: tokenization
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~433-510) -->
+
+![Text analysis workflow](../images/text-analysis-workflow.jpg)
+
+## The Document-Feature Matrix (DFM)
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~511-645) -->
+
+![DFM example](../images/dfm-example.jpg)
+
+## tf-idf weighting & descriptive analysis
+
+<!-- TODO: port from IF/slides/first_day_final.Rmd (lines ~646-705) -->
+
+## Task {.smaller}
+
+<!-- TODO: port hands-on task from IF/slides/first_day_final.Rmd -->

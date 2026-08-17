@@ -1,0 +1,22 @@
+# Raw archive of last year's course material — never publish as-is
+# (contains personal documents in IF/orga/ and restricted data in IF/data/)
+IF/
+
+# Quarto
+/.quarto/
+/_site/
+/_freeze/
+*_files/
+*_cache/
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# macOS
+.DS_Store
+
+# Office lock files
+~$*

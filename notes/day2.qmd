@@ -1,0 +1,30 @@
+---
+title: "Day 2 Notes"
+subtitle: "Topic Modeling & Classification"
+---
+
+::: {.callout-note}
+These notes accompany the [Day 2 slides](../slides/day2.qmd). Full prose
+content still needs to be ported over from `IF/scripts/all_notes.Rmd`
+(lines 685–1029).
+:::
+
+## Unsupervised Learning: Topic Modeling
+
+<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~685-800) -->
+
+## Supervised Learning
+
+<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~868-926) -->
+
+## Dictionaries
+
+<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~927-969) -->
+
+## Naive Bayes Classification
+
+<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~970-997) -->
+
+## Model Evaluation
+
+<!-- TODO: port from IF/scripts/all_notes.Rmd (lines ~998-1029) -->
