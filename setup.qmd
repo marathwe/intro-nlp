@@ -1,0 +1,358 @@
+---
+title: "Setup: First Steps with R Studio"
+subtitle: "Do this before Day 1"
+execute:
+  eval: false
+---
+
+::: {.callout-note}
+Code chunks on this page are shown for reference (`eval: false`) rather
+than executed at site-build time. Work through them yourself in
+RStudio before Day 1.
+:::
+
+Welcome to this R Studio tutorial. It's intended to support the
+in-person walkthrough and is a bit more detailed, with exercises
+included along the way.
+
+## Download R and R Studio
+
+To use R Studio, first download R, then R Studio — in that order. R is
+the programming language; R Studio is the interface. Use
+[posit.co/download/rstudio-desktop](https://posit.co/download/rstudio-desktop/)
+for both. Make sure the R version matches your operating system and,
+on a Mac, your processor. After downloading, the installer should
+start automatically.
+
+## R Studio interface & Markdown
+
+On the right side of the screen is the **console** — the window where
+commands are executed. Executed code and any error messages appear
+here, but the commands themselves are not saved. On the upper left is
+the **Environment** tab — your workspace, listing all relevant
+objects, variables, and data sets currently in use. Below that there
+are several more tabs; the **Help** tab is particularly useful, giving
+access to function documentation.
+
+## What are packages?
+
+Packages are collections of commands, which must be loaded into R
+Studio before they can be used — the same way you have to be taught
+something before you can apply it.
+
+Installing a package (name in quotation marks, since it's a string):
+
+```{r}
+# install.packages("pacman")
+```
+
+Packages only need to be installed once. Before an already-installed
+package can be used, it needs to be **loaded** — this time without
+quotation marks:
+
+```{r}
+library(pacman)
+```
+
+Loading packages one by one every session is tedious. The **pacman**
+package solves this: `p_load()` installs *and* loads packages in one
+call.
+
+```{r}
+pacman::p_load("haven", "tidyverse", "rmarkdown")
+```
+
+`haven` lets us import files saved in Stata format (`.dta`).
+
+Datasets also need to be loaded into R Studio, from a file saved on
+your computer (or a URL). Every file has a **path** — its address —
+which we need to specify in order to read it in.
+
+## Creating objects
+
+R is an object-based language: we store information in objects, which
+are containers for values. This could be a single variable (e.g.
+"age") or a whole dataset (rows = observations/cases, columns =
+variables).
+
+Below, we create an object called `fruit` (a vector) using the
+assignment arrow `<-`. `c()` ("combine") lists the values it should
+contain.
+
+```{r}
+fruit <- c("apple", "pear", "grapes")
+
+fruit[2]
+
+price <- c(2, 1, 4)
+```
+
+R is **case-sensitive** — `"h"` and `"H"` are different characters. It
+helps to write everything in lowercase to avoid this source of error.
+
+## Object classes
+
+Different objects hold different classes of values, which determine
+what operations are valid on them. A character object supports only
+very limited mathematical operations — taking the square root of
+`"Hello World"` doesn't make sense, and R will tell you so.
+
+```{r}
+str    <- "Hello World"
+num    <- 2.3
+num_2  <- 4
+bool   <- TRUE
+bool_2 <- FALSE
+```
+
+Check an object's class with `class()`:
+
+```{r}
+class(str)
+class(num)
+class(num_2)
+class(bool)
+class(bool_2)
+```
+
+We can also calculate with objects — often not just a single value,
+but a whole vector:
+
+```{r}
+# sqrt(str)   # would error — str is a character, not numeric
+num + num_2
+```
+
+## Creating a dataset
+
+Beyond single vectors, we can build small datasets — e.g. combining
+the `fruit` and `price` vectors with `cbind()`:
+
+```{r}
+basket <- cbind(fruit, price)
+basket <- as.data.frame(basket)
+View(basket)
+```
+
+With this mini dataset we can already run some calculations:
+
+```{r}
+mean(price)     # arithmetic mean
+median(price)   # median
+min(price)      # smallest value in the column
+max(price)      # largest value in the column
+sum(price)      # sum of the column
+summary(price)  # all of the above, at once
+```
+
+### Exercise
+
+1. Create a dataset from any two variables. Three cases is plenty. One
+   variable should hold numeric values, the other characters.
+
+## Importing a dataset
+
+**Working directory** — the path where your dataset lives. Once set,
+you only need to specify the file name, not its full path. Set it with
+`setwd()`; check the current one with `getwd()`. An incorrect working
+directory is a common reason a dataset fails to load.
+
+**Finding a file's path** — on a Mac, click the file in Finder, then
+right-click (or Control-click) and choose "Copy … as Pathname." On
+Windows, right-click the file → Properties → "Location" gives the
+folder, and you still need to append the file name and extension.
+Windows paths use double backslashes (`\\`) instead of a single slash
+(`/`).
+
+::: {.callout-tip}
+The example below reads a CSV file. There are other common formats,
+e.g. Stata's `.dta`, readable in R via the `haven` package's
+`read_dta()`. Swap in whichever dataset and format you're using for
+this session's exercises.
+:::
+
+```{r}
+#| label: import-data
+df <- read.csv("path/to/your/dataset.csv")
+```
+
+Check the Environment pane (top right) to confirm the dataset loaded —
+it'll show the number of observations and variables.
+
+```{r}
+View(df)
+```
+
+If variable names aren't self-explanatory, check the dataset's
+**codebook** for more detailed descriptions. Always review a dataset
+before using it.
+
+### Overview of variables
+
+```{r}
+ncol(df)  # number of columns
+nrow(df)  # number of rows
+```
+
+```{r}
+names(df)  # variable names
+```
+
+Access a specific variable with `$`:
+
+```{r}
+summary(df$age)
+```
+
+## Creating tables
+
+`table()` builds a frequency table; `prop.table()` converts it to
+proportions. To interpret these you need to know how the variables are
+coded.
+
+```{r}
+gender_distribution <- table(df$female)
+gender_distribution
+
+proptable <- prop.table(gender_distribution)
+round(proptable, digits = 2)
+```
+
+```{r}
+urban_distribution <- table(df$urban)
+urban_distribution
+
+proptable <- prop.table(urban_distribution)
+round(proptable, digits = 2)
+```
+
+**Cross-tabulation** — same `table()` function, just add a second
+variable after the comma:
+
+```{r}
+tab_2 <- table(df$female, df$urban)  # gender x urban/rural
+tab_2
+```
+
+The result isn't very readable without knowing the coding — here,
+`female`: 0 = male, 1 = female; `urban`: 0 = rural, 1 = urban. Add
+labels with `dimnames()`:
+
+```{r}
+dimnames(tab_2) <- list(gender = c("male", "female"), residence = c("rural", "urban"))
+tab_2
+```
+
+```{r}
+proptable <- prop.table(tab_2)
+round(proptable, digits = 2)
+
+# proptable_cols <- prop.table(tab_2, margin = 2)  # column-wise proportions
+```
+
+### Exercises
+
+**Importing data**
+
+2. Load the Titanic dataset.
+
+**Describing data**
+
+3. What object class does the variable `pclass` (passenger class)
+   have?
+4. How many women and men were on the Titanic?
+
+**Descriptive results**
+
+5. What was the average ticket price (median and mean; variable
+   `fare`)?
+6. What was the average age of the Titanic passengers?
+7. How many children did Mr. Anders Johan Andersson have on board?
+
+## Visualizations
+
+`hist()` gives a quick overview of a variable's distribution:
+
+```{r}
+hist(df$age)
+```
+
+For more flexible graphics, use **ggplot2** — see this
+[cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf).
+A boxplot:
+
+```{r}
+# Preprocessing before plotting
+df$female <- as.factor(df$female)
+df <- df[!is.na(df$female), ]
+df <- df[!is.na(df$age), ]
+
+df %>%
+  ggplot(aes(x = female, y = age, group = female)) +
+  geom_boxplot()
+```
+
+### Exercises
+
+8. Visualize the distribution of a variable.
+9. Visualize a variable a different way.
+
+## Piping
+
+Data outside of seminars is rarely clean — it needs preparation. For
+**data wrangling**, chain multiple commands together with piping.
+Assign to a new object with `<-`, specify the dataset, then chain
+tidyverse commands with `%>%` (Mac: Shift+Cmd+M, Windows: Ctrl+Shift+M).
+Pressing Enter after a pipe automatically indents the next line — no
+need to repeat the dataset name, and the last line doesn't need a
+trailing pipe.
+
+```{r}
+df_clean <- df %>%
+  select(female, happy, trust, income) %>%  # pick specific columns
+  filter(female == 1) %>%                    # pick specific rows
+  rename(gender = "female")                  # rename a variable
+
+# na.omit(df_clean$income)  # drop missing values
+```
+
+### What's the difference between `=` and `==`?
+
+Two equals signs (`==`) make a comparison and return `TRUE`/`FALSE`. A
+single equals sign is an assignment operator.
+
+### Exercises
+
+**Data preprocessing**
+
+10. Rename the variable `sex` to `gender`.
+11. Create a sub-dataset with at least three variables, containing
+    only passengers who survived the Titanic.
+12. Remove all missing values from the dataset.
+
+## If-else statements
+
+Most data wrangling can be done with tidyverse functions, but
+sometimes it's easier to think in if-then conditions.
+
+We want a new variable that's `"low"` when income is ≤ 5, and
+`"high"` otherwise:
+
+```{r}
+df_clean$income_category <- ifelse(df_clean$income <= 5, "low", "high")
+View(df_clean)
+```
+
+## Getting help with error messages
+
+Error messages are completely normal in R — the cause isn't always
+obvious, and it helps to look for support:
+
+- The **Help** tab (bottom right) has documentation for specific
+  functions and commands.
+- [RPubs](https://rpubs.com/) and
+  [Stack Overflow](https://stackoverflow.com/) are great community
+  resources — code can often be copied and adapted.
+- An LLM (e.g. ChatGPT) can help debug faulty code or explain what a
+  snippet does, so you build a solid understanding rather than just
+  copy-pasting.

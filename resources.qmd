@@ -28,7 +28,8 @@ title: "Resources"
 
 ## Setup
 
-New to R/RStudio? A "First Steps with R Studio" guide already exists at
-`../IF/prelim/Erste_Schritte_mit_RStudio_eng.Rmd`.
-<!-- TODO: port this into a setup.qmd page and link it here -->
-There's also an installation guide at `../IF/slides/installation_guide.Rmd`.
+New to R/RStudio? See the [Setup](setup.qmd) page — download links,
+the RStudio interface, packages, objects, importing data, and more.
+<!-- TODO: there's also an installation guide at
+     ../IF/slides/installation_guide.Rmd — fold anything not already
+     covered on the Setup page in from there. -->
