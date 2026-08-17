@@ -20,3 +20,8 @@ IF/
 
 # Office lock files
 ~$*
+
+**/*.quarto_ipynb
+
+# Claude Code session state
+.claude/

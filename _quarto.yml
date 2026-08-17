@@ -1,6 +1,12 @@
 project:
   type: website
   output-dir: _site
+  render:
+    - "*.qmd"
+    - "slides/*.qmd"
+    - "notes/*.qmd"
+    - "assignments/*.qmd"
+    - "!IF/"
 
 website:
   title: "Introduction to NLP"
