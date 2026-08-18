@@ -14,14 +14,14 @@ Choose one of the two options below.
 ## Option 1: Scrape your own data
 
 Scrape your own data on Wikipedia and preprocess it accordingly.
-Justify why you chose exactly this data. Ideally, discuss potential
+Justify why you chose exactly this data. Hence, some relevancy argument must be given. Ideally, discuss potential
 research questions and methods that can be used with your data.
 
 ## Option 2: Use the provided revision data set
 
 Use the revision data set, which contains all revisions from the
 "Britney Spears" Wikipedia article. Think about a possible research
-question and answer it with an appropriate method. Discuss why you
+question (ideally a social scientific one) and answer it with an appropriate method. Discuss why you
 chose that method and interpret the results.
 
 ## What to hand in
@@ -31,5 +31,4 @@ chose that method and interpret the results.
   did and why (Times New Roman, 12pt, 1.5 line spacing, page numbers,
   and a consistent citation style)
 
-Please send the PDF via email by **[update due date]** (your local
-time zone).
+Please send the PDF via email by 30.09.26 (your local time zone).

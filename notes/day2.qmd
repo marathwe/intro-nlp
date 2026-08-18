@@ -11,7 +11,9 @@ than executed at site-build time — classifiers take a while to fit, the
 embeddings chunk needs a large local GloVe file, and the Ollama chunks
 need a local Ollama server running. Run them yourself in RStudio. This
 page picks up where [Day 1](day1.qmd) left off (`clean_text_data`,
-etc.).
+etc.). Datasets can be downloaded from the
+[Data Preparation](day1.qmd#data-preparation) section of the Day 1
+notes.
 :::
 
 ## Supervised Learning
@@ -33,7 +35,7 @@ library(qs)
 library(quanteda)
 library(quanteda.textmodels)
 
-clean_text_data <- qread("../../IF/data/wikipedia_nobel_biographies_summaries_extended_clean.qs")
+clean_text_data <- qread("../data/wikipedia_nobel_biographies_summaries_extended_clean.qs")
 
 clean_text_data <- clean_text_data %>%
   filter(pageid != 7152417)
@@ -232,7 +234,7 @@ n-dimensional space.
 
 ```{r}
 #| label: load-data-embeddings
-df <- qs::qread("../../IF/data/wikipedia_nobel_biographies_summaries_clean.qs") %>%
+df <- qs::qread("../data/wikipedia_nobel_biographies_summaries_clean.qs") %>%
   drop_na()
 ```
 

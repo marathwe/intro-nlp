@@ -18,3 +18,16 @@ Everything in this folder is committed to a public-ish repo by default
 — when in doubt, leave the data out and instead show students how to
 download/generate it themselves (e.g. the Wikipedia scraping code in
 Day 1).
+
+## Currently included
+
+- `wikipedia_nobel_biographies_summaries_clean.qs` — 1,006 rows;
+  `title`, `pageid`, `extract`, `revision`, `gender`. Used throughout
+  Day 1 (`clean_text_data`).
+- `wikipedia_nobel_biographies_summaries_extended_clean.qs` — 1,047
+  rows; adds `Year` and `category`. Used in Day 1's optional task and
+  Day 2's classification exercises.
+
+Both are declared under `project: resources:` in `_quarto.yml` so
+Quarto copies them into `_site/data/` on every render/publish, and
+linked as download buttons from `notes/day1.qmd`.

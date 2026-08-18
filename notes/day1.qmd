@@ -6,10 +6,7 @@ execute:
 ---
 
 ::: {.callout-note}
-Code chunks on this page are shown for reference (`eval: false`) rather
-than executed at site-build time — several depend on network access
-(Wikipedia, Ollama), on data files that live outside this repo in
-`../IF/data/`, or take a while to run (topic models). Run them yourself
+Code chunks on this page are shown for reference (`eval: false`). Run them yourself
 in RStudio.
 :::
 
@@ -37,16 +34,8 @@ changes to Wikipedia articles, except in limited cases where editing is
 restricted to prevent disruption or vandalism.
 
 Wikipedia is a reflection of our contemporary knowledge production —
-it crucially shapes what people know (about the past). Already in
-2010, a majority of adult US internet users used Wikipedia for
-information retrieval (Heimlich 2011). As research has shown, what is
-written on Wikipedia pages matters: it influences media content,
-scientific research, and ordinary citizens' real-life decisions.
-Journalistic work has additionally shown that political groups
-proactively seek to edit Wikipedia in their favor. Previous research
-has shown that the number of editors on Wikipedia is limited and
-predominantly male, reflecting persisting patterns of gender inequality
-in other aspects of society.
+it crucially shapes what people know and how they remember the past. Wikipedia is influencing media content, scientific research, foundational for generative AI, and ordinary citizens' real-life decisions. Journalistic work has additionally shown that political groups proactively seek to edit Wikipedia in their favor, such as politicians
+\href{https://journals.sagepub.com/doi/full/10.1177/0894439317703579?casa_token=BHj2Jplj2owAAAAA\%3AlR1T_Lpdxs9V3BM4XUVZbxLXY8IbsSp1mxRP4U9YdzwWqlF-50rtFFVP-CgUjM54bPtmiw6N6ce2}{Paper} or far-right actors (\href{https://www.ardaudiothek.de/sendung/sockenpuppenzoo-angriff-auf-wikipedia/urn:ard:show:d223c352027c8c67/}{Sockenpuppenzoo}. Previous research has shown that number editors on Wikipedia are limited and predominantly male, reflecting persisting patterns of gender inequality in other aspects of society.
 
 ## Web Scraping
 
@@ -67,6 +56,7 @@ scraping the award table on
 ```{r}
 #| label: static-scraping
 # Install and import packages
+# install.package("pacman")
 library(pacman)
 pacman::p_load("rvest", "tidyverse")
 
@@ -187,8 +177,7 @@ first_table <- first_table[-1, ]
   Wikipedia. You can do this dynamically or statically — if
   dynamically, use the `WikipediR` or `wikkitidy` package.
 - Wikipedia helps us here via its category structure: scrape all pages
-  and their content under
-  [Category: Lists of Nobel laureates](https://en.wikipedia.org/wiki/List_of_female_Nobel_laureates).
+  and their content under [Category: Lists of Nobel laureates](https://en.wikipedia.org/wiki/List_of_female_Nobel_laureates).
 
 One approach: use `pages_in_category()` from `WikipediR` to retrieve
 all pages within the "Women Nobel laureates" category. There isn't a
@@ -205,6 +194,7 @@ all_pages_category_women <- WikipediR::pages_in_category(
 all_pages_category_women <- all_pages_category_women[-c(1, 2), ]
 
 nobel_table <- nobel_table %>%
+  slice(-n()) %>%
   pivot_longer(-Year, names_to = "category", values_to = "laureates") %>%
   rename(title = laureates)
 
@@ -219,6 +209,45 @@ men <- nobel_table %>%
 all_winners <- bind_rows(women, men)
 ```
 
+```{r}
+#| label: task I - solutions
+#| code-fold: true
+#| code-summary: "Show solution"
+
+
+# preprocess the scraped data to get a clean list of names
+names_tbl <- all_winners %>%
+  filter(!is.na(title), nzchar(title), tolower(str_trim(title)) != "none") %>% # delete all empty cells
+  # drop “no award” rows that are just dashes (any kind)
+  filter(!str_detect(title, "^[[:space:]]*[—–-]+[[:space:]]*$")) %>%
+  # some cells have multiple winners separated by semicolons
+  separate_rows(title, sep = "\\s*;\\s*") %>%
+  # strip bracketed citation markers like [a], [13]
+  mutate(title = str_remove_all(title, "\\[(?:\\d+|[A-Za-z])\\]")) %>%
+  mutate(title = str_squish(title)) %>%
+  filter(!title %in% c("None", "List of women Nobel laureates", "Cancelled due to World War II")) %>%
+  filter(nzchar(title))
+
+# unique vector of names
+all_names <- names_tbl %>%
+  distinct(title) %>%
+  arrange(title) %>%
+  pull(title)
+
+summaries_pages <- data.frame()
+
+for (title in all_names) {
+  
+  summary_page <- tryCatch(wikkitidy::get_page_summary(language = "en", title = title),
+    error = function(e) NULL)
+  
+  if (!is.null(summary_page)) {
+    summaries_pages <- bind_rows(summaries_pages, summary_page)
+  }
+}
+```
+
+
 ## Data Preparation
 
 A pre-scraped data set is provided, containing all summaries of the
@@ -230,12 +259,13 @@ biographies of all award winners, with columns:
 - `revision` — unique identifier for the specific page revision
 - `gender` — whether the awarded individual was female or male
 
+[⬇ Download `wikipedia_nobel_biographies_summaries_clean.qs` (134 KB)](../data/wikipedia_nobel_biographies_summaries_clean.qs){.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_clean.qs"}
+
 ```{r}
 #| label: inspect-clean-data
 library(qs)
 
-clean_text_data <- qread("../../IF/data/wikipedia_nobel_biographies_summaries_clean.qs")
-
+clean_text_data <- qread("../data/wikipedia_nobel_biographies_summaries_clean.qs")
 glimpse(clean_text_data)
 
 clean_text_data <- clean_text_data %>%
@@ -245,20 +275,35 @@ clean_text_data <- clean_text_data %>%
 proptable <- prop.table(table(clean_text_data$gender))
 round(proptable, digits = 2)
 ```
-
-### Task
-
-- Read the `wikipedia_nobel_biographies_summaries_clean_extended.qs`
-  data set and store it in a new object.
-- Drop NA values in the `title` variable.
-- Rename a column.
-- Select a subset of columns, but keep the gender column.
-- Filter out only female instances.
-
 Looking at the gender distribution reveals how imbalanced Nobel prizes
 are with respect to gender — only about 4.6% of all prizes were
 awarded to women. Let's find out how these women are depicted on
 Wikipedia.
+
+### Optional Task
+
+[⬇ Download `wikipedia_nobel_biographies_summaries_extended_clean.qs` (136 KB)](../data/wikipedia_nobel_biographies_summaries_extended_clean.qs){.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_extended_clean.qs"}
+
+- Read the `wikipedia_nobel_biographies_summaries_extended_clean.qs`
+  data set and store it in a new object.
+- Drop NA values in the `title` variable.
+- Select a subset of columns, but keep the gender column.
+- Filter out only female instances.
+
+```{r}
+#| label: task-extended-clean-data
+#| code-fold: true
+#| code-summary: "Show solution"
+
+wiki_summaries_ex <- qread("../data/wikipedia_nobel_biographies_summaries_extended_clean.qs")
+
+wiki_summaries_ex <- wiki_summaries_ex %>%
+  drop_na(title) %>%
+  select(pageid, title, extract, revision, gender) %>%
+  filter(gender == "female")
+
+```
+
 
 ## Text Preprocessing
 
@@ -284,8 +329,7 @@ Common preprocessing techniques:
 - **Stemming and lemmatization** — reduce words to their base/root
   form.
 
-We use the [quanteda](https://quanteda.io/) package for text
-preprocessing.
+We use the [quanteda](https://quanteda.io/) package for text preprocessing.
 
 ```{r}
 #| label: text-preprocessing
@@ -360,8 +404,7 @@ Term Frequency (TF = count / doc length):
 
 Document Frequency (DF, N = 2 docs): blue=1, car=2, fast=1, red=1, slow=1
 
-Inverse Document Frequency (IDF = ln(N/df)): blue=0.693, car=0,
-fast=0.693, red=0.693, slow=0.693
+Inverse Document Frequency (IDF = ln(N/df)): blue=0.693, car=0, fast=0.693, red=0.693, slow=0.693
 
 TF-IDF (tf × idf):
 
@@ -371,7 +414,7 @@ d1   0.000  0.000  0.231  0.231  0.000
 d2   0.173  0.000  0.000  0.000  0.173
 ```
 
-### Task: calculate a small DFM by hand
+### Optional Task: calculate a small DFM by hand
 
 - d1: "The quick brown fox"
 - d2: "The lazy dog"
@@ -432,6 +475,8 @@ dfm_tfidf_mat <- dfm_tfidf(dfm)
 
 ```{r}
 #| label: task-preprocessing-by-gender
+#| code-fold: true
+#| code-summary: "Show solution"
 clean_text_female <- clean_text_data %>% filter(gender == "female")
 clean_text_male   <- clean_text_data %>% filter(gender == "male")
 

@@ -14,8 +14,7 @@ execute:
 
 ## Introduction {.smaller}
 
-- If you have any inquiries, questions, feedback, or just want a pleasant
-  chat, please don't hesitate to reach out.
+- If you have any inquiries, questions, feedback, or just want a chat, please don't hesitate to reach out.
 - Email: [mara.weber\@ucl.ac.uk](mailto:mara.weber@ucl.ac.uk)
 - Credit points: hand in a mini project (see [Assignment](../assignments/index.qmd))
 
