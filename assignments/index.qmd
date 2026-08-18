@@ -3,10 +3,6 @@ title: "Assignment"
 subtitle: "Informatica Feminale Summer School (1 Credit Point)"
 ---
 
-::: {.callout-important}
-Update the due date below before publishing this year's course site.
-:::
-
 It is possible to obtain a Credit Point by handing in a mini project.
 It is mandatory to schedule a meeting with the instructor beforehand.
 Choose one of the two options below.

@@ -5,11 +5,6 @@ execute:
   eval: false
 ---
 
-::: {.callout-note}
-Code chunks on this page are shown for reference (`eval: false`). Run them yourself
-in RStudio.
-:::
-
 ## What is Natural Language Processing (NLP)?
 
 Natural Language Processing (NLP) is an interdisciplinary field between

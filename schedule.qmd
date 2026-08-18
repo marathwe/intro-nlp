@@ -2,12 +2,6 @@
 title: "Schedule"
 ---
 
-::: {.callout-note}
-Dates and times are placeholders — update once this year's schedule is
-confirmed. The course is 1.5 days: a full Day 1, then a half-day
-Day 2.
-:::
-
 ## Day 1 (full day) — Scraping & Text Preprocessing
 
 - What is Natural Language Processing (NLP)?
@@ -31,9 +25,3 @@ Day 2.
 - Running local LLMs with Ollama
 
 [Slides](slides/day2.qmd) · [Notes](notes/day2.qmd)
-
-::: {.callout-tip}
-Unsupervised learning / topic modeling (LDA) isn't covered in the
-1.5-day format — see last year's material in `../IF/` if you want to
-bring it back in for a longer run of the course.
-:::

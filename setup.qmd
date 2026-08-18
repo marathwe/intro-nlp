@@ -5,12 +5,6 @@ execute:
   eval: false
 ---
 
-::: {.callout-note}
-Code chunks on this page are shown for reference (`eval: false`) rather
-than executed at site-build time. Work through them yourself in
-RStudio before Day 1.
-:::
-
 Welcome to this R Studio tutorial. It's intended to support the
 in-person walkthrough and is a bit more detailed, with exercises
 included along the way.
