@@ -201,7 +201,7 @@
     "href": "setup.html#download-r-and-r-studio",
     "title": "Setup: First Steps with R Studio",
     "section": "Download R and R Studio",
-    "text": "Download R and R Studio\nTo use R Studio, first download R, then R Studio — in that order. R is the programming language; R Studio is the interface. Use posit.co/download/rstudio-desktop for both. Make sure the R version matches your operating system and, on a Mac, your processor. After downloading, the installer should start automatically.",
+    "text": "Download R and R Studio\nTo use R Studio, first download R, then R Studio — in that order. R is the programming language; R Studio is the interface. Use posit.co/download/rstudio-desktop for both, or get R directly from CRAN. Make sure the R version matches your operating system and, on a Mac, your processor. After downloading, the installer should start automatically.",
     "crumbs": [
       "Setup"
     ]

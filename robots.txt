@@ -1,1 +1,1 @@
-Sitemap: /sitemap.xml
+Sitemap: https://marathwe.github.io/intro-nlp/sitemap.xml
