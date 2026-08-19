@@ -14,9 +14,10 @@ included along the way.
 To use R Studio, first download R, then R Studio — in that order. R is
 the programming language; R Studio is the interface. Use
 [posit.co/download/rstudio-desktop](https://posit.co/download/rstudio-desktop/)
-for both. Make sure the R version matches your operating system and,
-on a Mac, your processor. After downloading, the installer should
-start automatically.
+for both, or get R directly from
+[CRAN](https://cran.r-project.org/). Make sure the R version matches
+your operating system and, on a Mac, your processor. After
+downloading, the installer should start automatically.
 
 ## R Studio interface & Markdown
 
