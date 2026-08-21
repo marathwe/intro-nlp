@@ -310,11 +310,11 @@ window.Quarto = {
 <p>In supervised learning we have labeled data — we want to learn a model that predicts a target feature. For example, given a biography summary, predict whether it’s of a female or male award winner: the <code>gender</code> column is our target feature, and the text is our predictor.</p>
 <p>To build a model that generalizes well, we split data into training and test sets. The training set trains the model; the test set checks how well it does on unseen data. One pitfall: with an imbalanced data set, make sure the target feature’s distribution is similar across both sets (see <a href="#model-evaluation">Model evaluation</a> below).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qs)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quanteda)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quanteda.textmodels)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_extended_clean.qs"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet"</span>)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> clean_text_data <span class="sc">%&gt;%</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pageid <span class="sc">!=</span> <span class="dv">7152417</span>)</span>
@@ -459,7 +459,7 @@ window.Quarto = {
 <p>Gradient descent, in short: compute the slope of the loss with respect to each parameter, and move a tiny step downhill.</p>
 </blockquote>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> qs<span class="sc">::</span><span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.qs"</span>) <span class="sc">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> arrow<span class="sc">::</span><span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.parquet"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
@@ -1135,11 +1135,11 @@ Tip
 <span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: train-test-split</span></span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qs)</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quanteda)</span>
 <span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quanteda.textmodels)</span>
 <span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_extended_clean.qs"</span>)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet"</span>)</span>
 <span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> clean_text_data <span class="sc">%&gt;%</span></span>
 <span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pageid <span class="sc">!=</span> <span class="dv">7152417</span>)</span>
@@ -1338,7 +1338,7 @@ Tip
 <span id="cb14-237"><a href="#cb14-237" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-240"><a href="#cb14-240" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb14-241"><a href="#cb14-241" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-data-embeddings</span></span>
-<span id="cb14-242"><a href="#cb14-242" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> qs<span class="sc">::</span><span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.qs"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-242"><a href="#cb14-242" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> arrow<span class="sc">::</span><span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.parquet"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb14-243"><a href="#cb14-243" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span>
 <span id="cb14-244"><a href="#cb14-244" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb14-245"><a href="#cb14-245" aria-hidden="true" tabindex="-1"></a></span>

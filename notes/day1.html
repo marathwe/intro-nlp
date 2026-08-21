@@ -499,11 +499,11 @@ window.Quarto = {
 <li><code>revision</code> — unique identifier for the specific page revision</li>
 <li><code>gender</code> — whether the awarded individual was female or male</li>
 </ul>
-<p><a href="../data/wikipedia_nobel_biographies_summaries_clean.qs" class="btn btn-outline-primary" role="button" download="wikipedia_nobel_biographies_summaries_clean.qs">⬇ Download <code>wikipedia_nobel_biographies_summaries_clean.qs</code> (134 KB)</a></p>
+<p><a href="../data/wikipedia_nobel_biographies_summaries_clean.parquet" class="btn btn-outline-primary" role="button" download="wikipedia_nobel_biographies_summaries_clean.parquet">⬇ Download <code>wikipedia_nobel_biographies_summaries_clean.parquet</code> (226 KB)</a></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qs)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.qs"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.parquet"</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(clean_text_data)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> clean_text_data <span class="sc">%&gt;%</span></span>
@@ -516,9 +516,9 @@ window.Quarto = {
 <p>Looking at the gender distribution reveals how imbalanced Nobel prizes are with respect to gender — only about 4.6% of all prizes were awarded to women. Let’s find out how these women are depicted on Wikipedia.</p>
 <section id="optional-task" class="level3">
 <h3 class="anchored" data-anchor-id="optional-task">Optional Task</h3>
-<p><a href="../data/wikipedia_nobel_biographies_summaries_extended_clean.qs" class="btn btn-outline-primary" role="button" download="wikipedia_nobel_biographies_summaries_extended_clean.qs">⬇ Download <code>wikipedia_nobel_biographies_summaries_extended_clean.qs</code> (136 KB)</a></p>
+<p><a href="../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet" class="btn btn-outline-primary" role="button" download="wikipedia_nobel_biographies_summaries_clean_extended.parquet">⬇ Download <code>wikipedia_nobel_biographies_summaries_clean_extended.parquet</code> (229 KB)</a></p>
 <ul>
-<li>Read the <code>wikipedia_nobel_biographies_summaries_extended_clean.qs</code> data set and store it in a new object.</li>
+<li>Read the <code>wikipedia_nobel_biographies_summaries_clean_extended.parquet</code> data set and store it in a new object.</li>
 <li>Drop NA values in the <code>title</code> variable.</li>
 <li>Select a subset of columns, but keep the gender column.</li>
 <li>Filter out only female instances.</li>
@@ -526,7 +526,7 @@ window.Quarto = {
 <div class="cell">
 <details class="code-fold">
 <summary>Show solution</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>wiki_summaries_ex <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_extended_clean.qs"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>wiki_summaries_ex <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>wiki_summaries_ex <span class="ot">&lt;-</span> wiki_summaries_ex <span class="sc">%&gt;%</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(title) <span class="sc">%&gt;%</span></span>
@@ -1436,13 +1436,13 @@ d2  0.000  0.000  0.000  0.000  0.231  0.231</code></pre>
 <span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`revision`</span> — unique identifier for the specific page revision</span>
 <span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`gender`</span> — whether the awarded individual was female or male</span>
 <span id="cb19-266"><a href="#cb19-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `wikipedia_nobel_biographies_summaries_clean.qs` (134 KB)</span><span class="co">](../data/wikipedia_nobel_biographies_summaries_clean.qs)</span>{.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_clean.qs"}</span>
+<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `wikipedia_nobel_biographies_summaries_clean.parquet` (226 KB)</span><span class="co">](../data/wikipedia_nobel_biographies_summaries_clean.parquet)</span>{.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_clean.parquet"}</span>
 <span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb19-272"><a href="#cb19-272" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: inspect-clean-data</span></span>
-<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qs)</span>
+<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb19-274"><a href="#cb19-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-275"><a href="#cb19-275" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.qs"</span>)</span>
+<span id="cb19-275"><a href="#cb19-275" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean.parquet"</span>)</span>
 <span id="cb19-276"><a href="#cb19-276" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(clean_text_data)</span>
 <span id="cb19-277"><a href="#cb19-277" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-278"><a href="#cb19-278" aria-hidden="true" tabindex="-1"></a>clean_text_data <span class="ot">&lt;-</span> clean_text_data <span class="sc">%&gt;%</span></span>
@@ -1459,9 +1459,9 @@ d2  0.000  0.000  0.000  0.000  0.231  0.231</code></pre>
 <span id="cb19-289"><a href="#cb19-289" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-290"><a href="#cb19-290" aria-hidden="true" tabindex="-1"></a><span class="fu">### Optional Task</span></span>
 <span id="cb19-291"><a href="#cb19-291" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-292"><a href="#cb19-292" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `wikipedia_nobel_biographies_summaries_extended_clean.qs` (136 KB)</span><span class="co">](../data/wikipedia_nobel_biographies_summaries_extended_clean.qs)</span>{.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_extended_clean.qs"}</span>
+<span id="cb19-292"><a href="#cb19-292" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `wikipedia_nobel_biographies_summaries_clean_extended.parquet` (229 KB)</span><span class="co">](../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet)</span>{.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_clean_extended.parquet"}</span>
 <span id="cb19-293"><a href="#cb19-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-294"><a href="#cb19-294" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Read the <span class="in">`wikipedia_nobel_biographies_summaries_extended_clean.qs`</span></span>
+<span id="cb19-294"><a href="#cb19-294" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Read the <span class="in">`wikipedia_nobel_biographies_summaries_clean_extended.parquet`</span></span>
 <span id="cb19-295"><a href="#cb19-295" aria-hidden="true" tabindex="-1"></a>  data set and store it in a new object.</span>
 <span id="cb19-296"><a href="#cb19-296" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Drop NA values in the <span class="in">`title`</span> variable.</span>
 <span id="cb19-297"><a href="#cb19-297" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Select a subset of columns, but keep the gender column.</span>
@@ -1472,7 +1472,7 @@ d2  0.000  0.000  0.000  0.000  0.231  0.231</code></pre>
 <span id="cb19-304"><a href="#cb19-304" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
 <span id="cb19-305"><a href="#cb19-305" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Show solution"</span></span>
 <span id="cb19-306"><a href="#cb19-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-307"><a href="#cb19-307" aria-hidden="true" tabindex="-1"></a>wiki_summaries_ex <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_extended_clean.qs"</span>)</span>
+<span id="cb19-307"><a href="#cb19-307" aria-hidden="true" tabindex="-1"></a>wiki_summaries_ex <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet"</span>)</span>
 <span id="cb19-308"><a href="#cb19-308" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-309"><a href="#cb19-309" aria-hidden="true" tabindex="-1"></a>wiki_summaries_ex <span class="ot">&lt;-</span> wiki_summaries_ex <span class="sc">%&gt;%</span></span>
 <span id="cb19-310"><a href="#cb19-310" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(title) <span class="sc">%&gt;%</span></span>
