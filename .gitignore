@@ -3,6 +3,9 @@
 # there. This rule is a safety net in case it's ever copied back in.
 IF/
 
+# European Social Survey data has redistribution restrictions — never publish
+data/ESS_2018_all_kurz.dta
+
 # Quarto
 /.quarto/
 /_site/
