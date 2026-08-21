@@ -254,13 +254,13 @@ biographies of all award winners, with columns:
 - `revision` — unique identifier for the specific page revision
 - `gender` — whether the awarded individual was female or male
 
-[⬇ Download `wikipedia_nobel_biographies_summaries_clean.qs` (134 KB)](../data/wikipedia_nobel_biographies_summaries_clean.qs){.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_clean.qs"}
+[⬇ Download `wikipedia_nobel_biographies_summaries_clean.parquet` (226 KB)](../data/wikipedia_nobel_biographies_summaries_clean.parquet){.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_clean.parquet"}
 
 ```{r}
 #| label: inspect-clean-data
-library(qs)
+library(arrow)
 
-clean_text_data <- qread("../data/wikipedia_nobel_biographies_summaries_clean.qs")
+clean_text_data <- read_parquet("../data/wikipedia_nobel_biographies_summaries_clean.parquet")
 glimpse(clean_text_data)
 
 clean_text_data <- clean_text_data %>%
@@ -277,9 +277,9 @@ Wikipedia.
 
 ### Optional Task
 
-[⬇ Download `wikipedia_nobel_biographies_summaries_extended_clean.qs` (136 KB)](../data/wikipedia_nobel_biographies_summaries_extended_clean.qs){.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_extended_clean.qs"}
+[⬇ Download `wikipedia_nobel_biographies_summaries_clean_extended.parquet` (229 KB)](../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet){.btn .btn-outline-primary role="button" download="wikipedia_nobel_biographies_summaries_clean_extended.parquet"}
 
-- Read the `wikipedia_nobel_biographies_summaries_extended_clean.qs`
+- Read the `wikipedia_nobel_biographies_summaries_clean_extended.parquet`
   data set and store it in a new object.
 - Drop NA values in the `title` variable.
 - Select a subset of columns, but keep the gender column.
@@ -290,7 +290,7 @@ Wikipedia.
 #| code-fold: true
 #| code-summary: "Show solution"
 
-wiki_summaries_ex <- qread("../data/wikipedia_nobel_biographies_summaries_extended_clean.qs")
+wiki_summaries_ex <- read_parquet("../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet")
 
 wiki_summaries_ex <- wiki_summaries_ex %>%
   drop_na(title) %>%

@@ -21,13 +21,19 @@ Day 1).
 
 ## Currently included
 
-- `wikipedia_nobel_biographies_summaries_clean.qs` — 1,006 rows;
+- `wikipedia_nobel_biographies_summaries_clean.parquet` — 1,006 rows;
   `title`, `pageid`, `extract`, `revision`, `gender`. Used throughout
   Day 1 (`clean_text_data`).
-- `wikipedia_nobel_biographies_summaries_extended_clean.qs` — 1,047
-  rows; adds `Year` and `category`. Used in Day 1's optional task and
-  Day 2's classification exercises.
+- `wikipedia_nobel_biographies_summaries_clean_extended.parquet` —
+  1,047 rows; adds `Year` and `category`. Used in Day 1's optional
+  task and Day 2's classification exercises.
 
 Both are declared under `project: resources:` in `_quarto.yml` so
 Quarto copies them into `_site/data/` on every render/publish, and
-linked as download buttons from `notes/day1.qmd`.
+linked as download buttons from `notes/day1.qmd`. Parquet was chosen
+over the earlier `.qs` versions so the files are readable outside R
+too (e.g. pandas, DuckDB), via the `arrow` package's `read_parquet()`.
+
+**Do not add** `Titanic.dta` or `ESS_2018_all_kurz.dta` here without
+checking their license/redistribution terms first — see the
+`.gitignore` entry for the latter.

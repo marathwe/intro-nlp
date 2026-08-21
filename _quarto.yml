@@ -7,7 +7,7 @@ project:
     - "notes/*.qmd"
     - "assignments/*.qmd"
   resources:
-    - "data/*.qs"
+    - "data/*.parquet"
 
 website:
   title: "Introduction to NLP"
