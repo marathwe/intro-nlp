@@ -355,21 +355,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="importing-a-dataset">Importing a dataset</h2>
 <p><strong>Working directory</strong> — the path where your dataset lives. Once set, you only need to specify the file name, not its full path. Set it with <code>setwd()</code>; check the current one with <code>getwd()</code>. An incorrect working directory is a common reason a dataset fails to load.</p>
 <p><strong>Finding a file’s path</strong> — on a Mac, click the file in Finder, then right-click (or Control-click) and choose “Copy … as Pathname.” On Windows, right-click the file → Properties → “Location” gives the folder, and you still need to append the file name and extension. Windows paths use double backslashes (<code>\\</code>) instead of a single slash (<code>/</code>).</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The example below reads a CSV file. There are other common formats, e.g.&nbsp;Stata’s <code>.dta</code>, readable in R via the <code>haven</code> package’s <code>read_dta()</code>. Swap in whichever dataset and format you’re using for this session’s exercises.</p>
-</div>
-</div>
+<p>We’ll use the <strong>Titanic</strong> dataset (887 passengers) for the exercises below. It’s in Stata’s <code>.dta</code> format — readable in R via the <code>haven</code> package’s <code>read_dta()</code> (a plain CSV would use <code>read.csv()</code> instead).</p>
+<p><a href="../data/Titanic.dta" class="btn btn-outline-primary" role="button" download="Titanic.dta">⬇ Download <code>Titanic.dta</code> (92 KB)</a></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"path/to/your/dataset.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"../data/Titanic.dta"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Check the Environment pane (top right) to confirm the dataset loaded — it’ll show the number of observations and variables.</p>
 <div class="cell">
@@ -452,12 +442,12 @@ Tip
 <p>For more flexible graphics, use <strong>ggplot2</strong> — see this <a href="https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf">cheat sheet</a>. A boxplot:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocessing before plotting</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>female <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>female)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>female), ]</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>sex)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>sex), ]</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>age), ]</span>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> female, <span class="at">y =</span> age, <span class="at">group =</span> female)) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> sex, <span class="at">y =</span> age, <span class="at">group =</span> sex)) <span class="sc">+</span></span>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="exercises-1" class="level3">
@@ -1129,16 +1119,16 @@ Tip
 <span id="cb24-177"><a href="#cb24-177" aria-hidden="true" tabindex="-1"></a>Windows paths use double backslashes (<span class="in">`\\`</span>) instead of a single slash</span>
 <span id="cb24-178"><a href="#cb24-178" aria-hidden="true" tabindex="-1"></a>(<span class="in">`/`</span>).</span>
 <span id="cb24-179"><a href="#cb24-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-180"><a href="#cb24-180" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
-<span id="cb24-181"><a href="#cb24-181" aria-hidden="true" tabindex="-1"></a>The example below reads a CSV file. There are other common formats,</span>
-<span id="cb24-182"><a href="#cb24-182" aria-hidden="true" tabindex="-1"></a>e.g. Stata's <span class="in">`.dta`</span>, readable in R via the <span class="in">`haven`</span> package's</span>
-<span id="cb24-183"><a href="#cb24-183" aria-hidden="true" tabindex="-1"></a><span class="in">`read_dta()`</span>. Swap in whichever dataset and format you're using for</span>
-<span id="cb24-184"><a href="#cb24-184" aria-hidden="true" tabindex="-1"></a>this session's exercises.</span>
-<span id="cb24-185"><a href="#cb24-185" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb24-186"><a href="#cb24-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-189"><a href="#cb24-189" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-190"><a href="#cb24-190" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: import-data</span></span>
-<span id="cb24-191"><a href="#cb24-191" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"path/to/your/dataset.csv"</span>)</span>
+<span id="cb24-180"><a href="#cb24-180" aria-hidden="true" tabindex="-1"></a>We'll use the **Titanic** dataset (887 passengers) for the exercises</span>
+<span id="cb24-181"><a href="#cb24-181" aria-hidden="true" tabindex="-1"></a>below. It's in Stata's <span class="in">`.dta`</span> format — readable in R via the <span class="in">`haven`</span></span>
+<span id="cb24-182"><a href="#cb24-182" aria-hidden="true" tabindex="-1"></a>package's <span class="in">`read_dta()`</span> (a plain CSV would use <span class="in">`read.csv()`</span> instead).</span>
+<span id="cb24-183"><a href="#cb24-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-184"><a href="#cb24-184" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `Titanic.dta` (92 KB)</span><span class="co">](../data/Titanic.dta)</span>{.btn .btn-outline-primary role="button" download="Titanic.dta"}</span>
+<span id="cb24-185"><a href="#cb24-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-188"><a href="#cb24-188" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb24-189"><a href="#cb24-189" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: import-data</span></span>
+<span id="cb24-190"><a href="#cb24-190" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb24-191"><a href="#cb24-191" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"../data/Titanic.dta"</span>)</span>
 <span id="cb24-192"><a href="#cb24-192" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb24-193"><a href="#cb24-193" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-194"><a href="#cb24-194" aria-hidden="true" tabindex="-1"></a>Check the Environment pane (top right) to confirm the dataset loaded —</span>
@@ -1248,12 +1238,12 @@ Tip
 <span id="cb24-318"><a href="#cb24-318" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-321"><a href="#cb24-321" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb24-322"><a href="#cb24-322" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocessing before plotting</span></span>
-<span id="cb24-323"><a href="#cb24-323" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>female <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>female)</span>
-<span id="cb24-324"><a href="#cb24-324" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>female), ]</span>
+<span id="cb24-323"><a href="#cb24-323" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>sex)</span>
+<span id="cb24-324"><a href="#cb24-324" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>sex), ]</span>
 <span id="cb24-325"><a href="#cb24-325" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>age), ]</span>
 <span id="cb24-326"><a href="#cb24-326" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-327"><a href="#cb24-327" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
-<span id="cb24-328"><a href="#cb24-328" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> female, <span class="at">y =</span> age, <span class="at">group =</span> female)) <span class="sc">+</span></span>
+<span id="cb24-328"><a href="#cb24-328" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> sex, <span class="at">y =</span> age, <span class="at">group =</span> sex)) <span class="sc">+</span></span>
 <span id="cb24-329"><a href="#cb24-329" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span>
 <span id="cb24-330"><a href="#cb24-330" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb24-331"><a href="#cb24-331" aria-hidden="true" tabindex="-1"></a></span>
