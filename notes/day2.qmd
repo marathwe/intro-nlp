@@ -115,17 +115,36 @@ dict_agency_communion <- dictionary(list(
 
 dfm_ac <- dfm_lookup(dfm_all, dict_agency_communion)
 
-# normalize by document length so longer bios don't just score higher
-dfm_ac_prop <- dfm_weight(dfm_ac, scheme = "prop")
+# rate = matched words / total words in the biography. We deliberately
+# don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary
+# dfm it normalizes agency and communion counts against each other
+# (their relative mix), not against document length — and a biography
+# with zero hits in both categories would silently score (0, 0) either
+# way, which distorts group means since hit rates differ by gender.
+ac_by_doc <- convert(dfm_ac, to = "data.frame") %>%
+  mutate(doc_len = ntoken(dfm_all)) %>%
+  bind_cols(gender = docvars(dfm_all, "gender")) %>%
+  mutate(agency_rate = agency / doc_len, communion_rate = communion / doc_len)
 
-ac_by_doc <- convert(dfm_ac_prop, to = "data.frame") %>%
-  bind_cols(gender = docvars(dfm_all, "gender"))
-
-# compare agentic vs. communal language by gender
+# compare agentic vs. communal language rate by gender
 ac_by_doc %>%
   group_by(gender) %>%
-  summarise(mean_agency = mean(agency), mean_communion = mean(communion))
+  summarise(mean_agency = mean(agency_rate), mean_communion = mean(communion_rate), n = n())
 ```
+
+**Interpretation:** female biographies score higher on *both*
+dimensions (≈2.0% of words are agency-coded, ≈2.0% communion-coded)
+than male biographies (≈1.4% agency, ≈1.8% communion) — so female
+bios use more trait-coded language overall, not specifically more
+agentic language relative to communal. Male biographies lean more
+communal than agentic among what coded language they do have. Two
+caveats before reading too much into this: (1) only 47 of the 1,047
+biographies are female, so the female estimate is noisy — check
+whether the difference holds up under a significance test (e.g. a
+t-test or bootstrap CI) before treating it as a real effect; (2) about
+23% of male biographies (vs. 11% of female ones) have zero matches in
+either dictionary at all, typically the shortest, most generic
+summaries — worth checking whether that's driving part of the gap.
 
 ### Naive Bayes Classification
 

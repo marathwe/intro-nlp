@@ -77,16 +77,30 @@ dict_agency_communion <- dictionary(list(
 
 dfm_ac <- dfm_lookup(dfm_all, dict_agency_communion)
 
-# normalize by document length so longer bios don't just score higher
-dfm_ac_prop <- dfm_weight(dfm_ac, scheme = "prop")
+# rate = matched words / total words in the biography. We deliberately
+# don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary
+# dfm it normalizes agency and communion counts against each other
+# (their relative mix), not against document length — and a biography
+# with zero hits in both categories would silently score (0, 0) either
+# way, which distorts group means since hit rates differ by gender.
+ac_by_doc <- convert(dfm_ac, to = "data.frame") %>%
+  mutate(doc_len = ntoken(dfm_all)) %>%
+  bind_cols(gender = docvars(dfm_all, "gender")) %>%
+  mutate(agency_rate = agency / doc_len, communion_rate = communion / doc_len)
 
-ac_by_doc <- convert(dfm_ac_prop, to = "data.frame") %>%
-  bind_cols(gender = docvars(dfm_all, "gender"))
-
-# compare agentic vs. communal language by gender
+# compare agentic vs. communal language rate by gender
 ac_by_doc %>%
   group_by(gender) %>%
-  summarise(mean_agency = mean(agency), mean_communion = mean(communion))
+  summarise(mean_agency = mean(agency_rate), mean_communion = mean(communion_rate), n = n())
+
+# Interpretation: female biographies score higher on BOTH dimensions
+# (~2.0% agency-coded, ~2.0% communion-coded) than male biographies
+# (~1.4% agency, ~1.8% communion) -- more trait-coded language overall,
+# not specifically more agentic relative to communal. Caveats: only 47
+# of 1,047 bios are female (noisy estimate -- check significance before
+# trusting this), and ~23% of male vs ~11% of female bios have zero
+# hits in either dictionary (typically the shortest, most generic
+# summaries), which may be driving part of the gap.
 
 
 # ---- Naive Bayes Classification ---------------------------------------
