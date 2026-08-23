@@ -77,15 +77,25 @@ categories or sentiments. Each word in the dictionary is assigned to
 one or more categories, allowing for the classification of text based
 on the presence of these words.
 
+We use the **Agency** (194 words) and **Communion** (186 words)
+dictionaries from Pietraszkiewicz, Formanowicz, Gustafsson Sendén,
+Boyd, Sikström & Sczesny (2019), ["The Big Two Dictionaries: Capturing
+Agency and Communion in Natural
+Language"](https://doi.org/10.1002/ejsp.2561) (*European Journal of
+Social Psychology*), freely available on
+[OSF](https://osf.io/p7fzb/). Agency words capture achievement,
+independence, and competence (e.g. *achieve*, *confident*,
+*independent*); communion words capture warmth, relationships, and
+care (e.g. *caring*, *family*, *support*). Instead of predicting
+gender from the text, we use them descriptively — to measure whether
+female and male Nobel biographies differ in how agentic or communal
+their language is.
+
+[⬇ Download `agency_dictionary.txt`](../data/agency_dictionary.txt){.btn .btn-outline-primary role="button" download="agency_dictionary.txt"}
+[⬇ Download `communion_dictionary.txt`](../data/communion_dictionary.txt){.btn .btn-outline-primary role="button" download="communion_dictionary.txt"}
+
 ```{r}
-#| label: dictionary-classifier
-set.seed(123)
-
-clean_text_data$train <- sample(c(TRUE, FALSE),
-                                size = nrow(clean_text_data),
-                                replace = TRUE,
-                                prob = c(.8, .2))
-
+#| label: dictionary-agency-communion
 corp <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
 
 toks <- tokens(corp, remove_punct = TRUE) %>%
@@ -93,23 +103,27 @@ toks <- tokens(corp, remove_punct = TRUE) %>%
 
 dfm_all <- dfm(toks)
 
-# which words could we add?
-dict_gender <- dictionary(list(
-  female = c("she","her","hers","herself"),
-  male   = c("he","him","his","himself")
+# Agency & Communion dictionary (Pietraszkiewicz et al. 2019, https://osf.io/p7fzb/)
+agency_words <- readLines("../data/agency_dictionary.txt")
+communion_words <- readLines("../data/communion_dictionary.txt")
+
+dict_agency_communion <- dictionary(list(
+  agency    = agency_words,
+  communion = communion_words
 ))
 
-dfm_pron_all  <- dfm_lookup(dfm_all, dict_gender)
-dfm_pron_train <- dfm_subset(dfm_pron_all, train)
-dfm_pron_test  <- dfm_subset(dfm_pron_all, !train)
+dfm_ac <- dfm_lookup(dfm_all, dict_agency_communion)
 
-pred_test <- ifelse(dfm_pron_test[, "female"] >  dfm_pron_test[, "male"], "female",
-              ifelse(dfm_pron_test[, "female"] <  dfm_pron_test[, "male"], "male", NA))
-pred_test <- factor(pred_test, levels = c("female","male"))
+# normalize by document length so longer bios don't just score higher
+dfm_ac_prop <- dfm_weight(dfm_ac, scheme = "prop")
 
-y_test <- factor(docvars(dfm_pron_test, "gender"), levels = levels(pred_test))
+ac_by_doc <- convert(dfm_ac_prop, to = "data.frame") %>%
+  bind_cols(gender = docvars(dfm_all, "gender"))
 
-caret::confusionMatrix(pred_test, y_test)
+# compare agentic vs. communal language by gender
+ac_by_doc %>%
+  group_by(gender) %>%
+  summarise(mean_agency = mean(agency), mean_communion = mean(communion))
 ```
 
 ### Naive Bayes Classification
@@ -241,27 +255,10 @@ into a low-dimensional space (low compared to the vocabulary size).
 Word Embeddings are pre-trained on large corpora, for instance on
 Wikipedia. The most common ones are Word2Vec, [Glove
 Project](https://nlp.stanford.edu/projects/glove/) and Fasttext. They
-require a lot of computational power and data to be trained.
-
-Windows: If we are saying that a meaning of a word is defined by the
-company they keep, we can define a window size. The window size
-defines how many words before and after the target word we want to
-consider as context.
-
-Imagine the model is tasked with predicting a masked word. The query:
-"the ___ chased the ball," "the ___ is a pet". It starts with randomly
-guessing the embedding for the hidden words. In our training data we
-allow the model to see the actual word, so that it can compare its own
-predictions with the actual prediction. With every wrong prediction
-the model learns to update its weights/parameters ([Gradient
-Descent](https://www.geeksforgeeks.org/machine-learning/gradient-descent-algorithm-and-its-variants/)),
-so that it hopefully makes a better prediction next time. To reduce
-the mistakes the model does it generates vectors that are closer
-together when they frequently appear together in its n-dimensional
-space.
-
-Gradient descent says: compute the slope of the loss with respect to
-each parameter, and move a tiny step downhill.
+require a lot of computational power and data to be trained. A
+**window size** defines how many words before and after the target
+word we consider as context — words that frequently share the same
+context end up with similar vectors.
 
 ```{r}
 #| label: load-data-embeddings

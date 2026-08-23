@@ -8,6 +8,7 @@ project:
     - "!slides/"
   resources:
     - "data/*.parquet"
+    - "data/*.txt"
 
 website:
   title: "Introduction to NLP"
