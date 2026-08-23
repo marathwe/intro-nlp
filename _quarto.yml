@@ -3,9 +3,9 @@ project:
   output-dir: _site
   render:
     - "*.qmd"
-    - "slides/*.qmd"
     - "notes/*.qmd"
     - "assignments/*.qmd"
+    - "!slides/"
   resources:
     - "data/*.parquet"
 
@@ -30,13 +30,7 @@ website:
         text: Setup
       - href: schedule.qmd
         text: Schedule
-      - section: "Slides"
-        contents:
-          - href: slides/day1.qmd
-            text: "Day 1 (full day)"
-          - href: slides/day2.qmd
-            text: "Day 2 (half day)"
-      - section: "Notes"
+      - section: "Course Content"
         contents:
           - href: notes/day1.qmd
             text: "Day 1 (full day)"

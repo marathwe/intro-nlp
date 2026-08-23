@@ -13,7 +13,7 @@ title: "Schedule"
 - The document-feature matrix (DFM) and tf-idf weighting
 - Descriptive analysis (word clouds, frequency plots)
 
-[Slides](slides/day1.qmd) · [Notes](notes/day1.qmd)
+[Notes](notes/day1.qmd)
 
 ## Day 2 (half day) — Supervised Learning, Word Embeddings & LLMs
 
@@ -24,4 +24,4 @@ title: "Schedule"
 - Large language models (LLMs) and the transformer architecture
 - Running local LLMs with Ollama
 
-[Slides](slides/day2.qmd) · [Notes](notes/day2.qmd)
+[Notes](notes/day2.qmd)

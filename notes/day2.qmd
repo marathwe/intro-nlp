@@ -5,22 +5,28 @@ execute:
   eval: false
 ---
 
-## Supervised Learning
-
 This page picks up where [Day 1](day1.qmd) left off (`clean_text_data`,
 etc.) — datasets can be downloaded from the
 [Data Preparation](day1.qmd#data-preparation) section there.
 
-In supervised learning we have labeled data — we want to learn a model
-that predicts a target feature. For example, given a biography
-summary, predict whether it's of a female or male award winner: the
-`gender` column is our target feature, and the text is our predictor.
+## Supervised Learning
 
-To build a model that generalizes well, we split data into training
-and test sets. The training set trains the model; the test set checks
-how well it does on unseen data. One pitfall: with an imbalanced data
-set, make sure the target feature's distribution is similar across
-both sets (see [Model evaluation](#model-evaluation) below).
+In supervised learning we've labeled data. Thus, we want to learn a
+model that is able to predict our target feature. For example, we have
+our biography summaries and we want to learn a model that is able to
+predict whether the summary is indicating whether the summary is of
+female or male award winner. Our gender column is our target feature.
+Our text is our predictor, since we would like to infer the gender of
+the winner based on the words in the text.
+
+To build a model that generalizes well we need to split our data in
+training and test data. The training data is used to train our model
+and our test data is used to test how well our model is doing when
+predicting unseen data. There are several pitfalls when splitting the
+data. For example, if we have a very imbalanced data set, we need to
+make sure that the distribution of the target feature is similar in
+both data sets. However, we will explore that in the coming section on
+model evaluation.
 
 ```{r}
 #| label: train-test-split
@@ -28,64 +34,78 @@ library(arrow)
 library(quanteda)
 library(quanteda.textmodels)
 
+# Import data
 clean_text_data <- read_parquet("../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet")
 
+# Drop missings
 clean_text_data <- clean_text_data %>%
   filter(pageid != 7152417)
 
+# Create training and test set
 set.seed(123)
-clean_text_data$train <- sample(x = c(TRUE, FALSE),
-                                 size = nrow(clean_text_data),
-                                 replace = TRUE,
-                                 prob = c(.8, .2))
 
+clean_text_data$train <- sample(x = c(TRUE, FALSE),
+                            size = nrow(clean_text_data),
+                            replace = TRUE,
+                            prob = c(.8, .2))
+
+# we first create a corpus
 corpus <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
 
+# Convert to a DFM
 dfm <- corpus %>%
   tokens() %>%
   dfm() %>%
   dfm_remove(stopwords("en"))
 
+# Subset to training set observations
 dfm_train <- dfm_subset(dfm, train)
-dfm_test  <- dfm_subset(dfm, !train)
 
-dim(dfm_train)  # 808 documents, 8239 tokens
-dim(dfm_test)   # 200 documents, 8239 tokens
+# Subset to test set observations
+dfm_test <- dfm_subset(dfm, !train)
+
+# Check dimensions
+dim(dfm_train) # 808 documents and 8239 tokens
+dim(dfm_test) # 200 documents and 8239
 ```
 
 ## Dictionaries
 
-Dictionaries are a classic tool in text analysis: a predefined list of
-words associated with specific categories or sentiments. Each
-dictionary word is assigned to one or more categories, allowing
-classification of text based on the presence of these words.
+Dictionaries have frequently been used in text analysis. A dictionary
+is a predefined list of words that are associated with specific
+categories or sentiments. Each word in the dictionary is assigned to
+one or more categories, allowing for the classification of text based
+on the presence of these words.
 
 ```{r}
 #| label: dictionary-classifier
 set.seed(123)
 
 clean_text_data$train <- sample(c(TRUE, FALSE),
-                                 size = nrow(clean_text_data),
-                                 replace = TRUE,
-                                 prob = c(.8, .2))
+                                size = nrow(clean_text_data),
+                                replace = TRUE,
+                                prob = c(.8, .2))
 
 corp <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
-toks <- tokens(corp, remove_punct = TRUE) %>% tokens_tolower()
+
+toks <- tokens(corp, remove_punct = TRUE) %>%
+  tokens_tolower()
+
 dfm_all <- dfm(toks)
 
 # which words could we add?
 dict_gender <- dictionary(list(
-  female = c("she", "her", "hers", "herself"),
-  male   = c("he", "him", "his", "himself")
+  female = c("she","her","hers","herself"),
+  male   = c("he","him","his","himself")
 ))
 
-dfm_pron_all   <- dfm_lookup(dfm_all, dict_gender)
+dfm_pron_all  <- dfm_lookup(dfm_all, dict_gender)
 dfm_pron_train <- dfm_subset(dfm_pron_all, train)
 dfm_pron_test  <- dfm_subset(dfm_pron_all, !train)
 
 pred_test <- ifelse(dfm_pron_test[, "female"] >  dfm_pron_test[, "male"], "female",
               ifelse(dfm_pron_test[, "female"] <  dfm_pron_test[, "male"], "male", NA))
-pred_test <- factor(pred_test, levels = c("female", "male"))
+pred_test <- factor(pred_test, levels = c("female","male"))
 
 y_test <- factor(docvars(dfm_pron_test, "gender"), levels = levels(pred_test))
 
@@ -95,16 +115,16 @@ caret::confusionMatrix(pred_test, y_test)
 ### Naive Bayes Classification
 
 Naive Bayes (NB) is a simple yet effective probabilistic classifier
-based on Bayes' Theorem. It predicts the most likely class by comparing
-the probabilities of each class given the observed features. The
-"naive" assumption is that features are conditionally independent
-given the class, which simplifies computation. NB is widely used in
-high-dimensional tasks like text classification.
+based on Bayes' Theorem. It predicts the most likely class of data by
+comparing the probabilities of each class given the observed features.
+The "naive" assumption is that all features are conditionally
+independent given the class, which simplifies computation. Naive Bayes
+is widely used in high-dimensional tasks such as text classification.
 
 In plain terms: given some conditions, it answers "which outcome is
 most probable?" For example, given that the weather is rainy and the
-temperature is 6°C, Naive Bayes can estimate the probability someone
-will (or won't) play golf, and classify accordingly.
+temperature is 6 degrees, Naive Bayes can estimate the probability
+that someone will (or will not) play golf, and classify accordingly.
 
 ```{r}
 #| label: naive-bayes
@@ -112,7 +132,7 @@ y <- factor(docvars(dfm_train, "gender"))
 nb_train <- textmodel_nb(x = dfm_train, y = y, prior = "docfreq")
 
 class_test <- predict(nb_train, newdata = dfm_test, type = "class")
-docvars(dfm_test, "pred_nb") <- class_test
+docvars(dfm_test, "pred_nb")  <- class_test
 
 confusion_test <- table(
   predicted = docvars(dfm_test, "pred_nb"),
@@ -121,19 +141,24 @@ confusion_test <- table(
 confusion_test
 ```
 
-The model mostly predicts "male" when the winner actually was male —
-unsurprising, since male award winners are highly over-represented in
-the data. Predicting "male" is always a good guess when the target is
-this skewed — a **class imbalance**, a well-known ML problem. There
-are several techniques to tackle it, such as upsampling the minority
-class.
+We can already see that in most cases the model predicted male when
+the winner was actually male. That makes sense since male award
+winners are highly over-represented in our data set. It'll always be
+a good guess to just predict the label "male". If the target feature
+is so highly skewed towards one category we're talking about class
+imbalances. This is a known problem in Machine Learning. There are
+several techniques how to tackle class imbalances, such as upsampling
+the minority class.
 
 ### Model evaluation {#model-evaluation}
 
-A model can make two kinds of mistakes: falsely classifying instances
-as female when they were male (false positives), and classifying
-instances as male when they were actually female (false negatives). We
-have several indicators to assess model performance:
+When the model makes the prediction it can make two mistakes: it can
+falsely classify instances as female, even though they were actually
+male (False Positives), and it can classify instances as male even
+though they were actually female (False Negatives). We have several
+indicators to assess the performance of our model ([silly meme
+explains it quite
+well](https://www.reddit.com/r/learnmachinelearning/comments/mn1i08/a_simple_and_easytoremember_example_for_false/)).
 
 $$Accuracy = \frac{\text{Correctly Classified}}{\text{Total Classifications}}$$
 
@@ -141,37 +166,44 @@ $$Precision = \frac{\text{True Positives}}{\text{False Positives} + \text{True P
 
 $$Recall = \frac{\text{True Positives}}{\text{False Negatives} + \text{True Positives}}$$
 
-*Recall is also called Sensitivity or the True Positive Rate.*
+* Also called Sensitivity or True Positive Rate.
 
-$$F_1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}$$
+$$F_1\ Score = 2 \times \frac{Precision \times Recall}{Precision + Recall}$$
 
 ### Task
 
-- Why do we have so many different measurements? Why are we interested
-  in the rates of true positives and true negatives separately?
+* Any idea why do we have so many different measurements? Why are we
+  interested in the rate of true positives and true negatives
+  separately?
 
 ```{r}
 #| label: confusion-matrix
 library(caret)
-confusion_test_statistics <- confusionMatrix(confusion_test, positive = "female")
+confusion_test_statistics <- confusionMatrix(confusion_test,
+                                              positive = "female")
+
 confusion_test_statistics
 ```
 
-- Why is our true negative rate zero?
+* Why is our true negative rate zero?
 
 ### Task
 
-- Can we build a predictor for STEM vs. non-STEM prizes?
+* Can we build a predictor for STEM vs. non-STEM prices?
 
 ```{r}
 #| label: stem-classifier
-clean_text_data$stem <- ifelse(
-  clean_text_data$category %in% c("Chemistry", "Physiologyor Medicine", "Medicine", "Physics"),
-  "STEM", "non-STEM"
-)
+#| code-fold: true
+#| code-summary: "Show solution"
+
+clean_text_data$stem <- ifelse(clean_text_data$category %in% c("Chemistry", "Physiologyor Medicine", "Medicine", "Physics"), "STEM", "non-STEM")
+
 
 corp <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
-toks <- tokens(corp, remove_punct = TRUE) %>% tokens_tolower()
+
+toks <- tokens(corp, remove_punct = TRUE) %>%
+  tokens_tolower()
+
 dfm_all <- dfm(toks)
 
 dfm_train <- dfm_subset(dfm_all, train)
@@ -181,7 +213,7 @@ y <- factor(docvars(dfm_train, "stem"))
 nb_train <- textmodel_nb(x = dfm_train, y = y, prior = "docfreq")
 
 class_test <- predict(nb_train, newdata = dfm_test, type = "class")
-docvars(dfm_test, "pred_nb") <- class_test
+docvars(dfm_test, "pred_nb")  <- class_test
 
 confusion_test <- table(
   predicted = docvars(dfm_test, "pred_nb"),
@@ -189,45 +221,53 @@ confusion_test <- table(
 )
 confusion_test
 
-confusion_test_statistics <- confusionMatrix(confusion_test, positive = "STEM")
+confusion_test_statistics <- confusionMatrix(confusion_test,
+                                              positive = "STEM")
+
 confusion_test_statistics
 ```
 
 ## Word Embeddings
 
-"The meaning of words is defined by the company they keep" (Firth,
-1957). We represent meaning using a vector for each word, constructed
-so that words similar in meaning are also close together in vector
-space. The goal is a dense vector per word, similar to the vectors of
-words that appear in similar contexts. These representations are
-called **word embeddings**, because we "embed" words into a
-low-dimensional space (low compared to the vocabulary size).
+The meaning of words is defined by the company they keep (Firth,
+1957). We represent meaning using a vector of each word. Vectors are
+constructed in a way that words that are similar in meaning are also
+similar in the vector space. Our goal is to build a dense vector for
+each word, chosen so that it is similar to vectors of words that
+appear in similar context and thus, have a similar meaning. These
+representations are known as word embeddings because we "embed" words
+into a low-dimensional space (low compared to the vocabulary size).
 
-Word embeddings are pre-trained on large corpora, e.g. Wikipedia. The
-most common approaches are Word2Vec, the
-[GloVe project](https://nlp.stanford.edu/projects/glove/), and
-fastText — all require substantial computational power and data to
-train.
+Word Embeddings are pre-trained on large corpora, for instance on
+Wikipedia. The most common ones are Word2Vec, [Glove
+Project](https://nlp.stanford.edu/projects/glove/) and Fasttext. They
+require a lot of computational power and data to be trained.
 
-**Windows** — if a word's meaning is defined by the company it keeps,
-we can define a window size: how many words before and after the
-target word count as context.
+Windows: If we are saying that a meaning of a word is defined by the
+company they keep, we can define a window size. The window size
+defines how many words before and after the target word we want to
+consider as context.
 
-Imagine a model tasked with predicting a masked word — "the ___ chased
-the ball", "the ___ is a pet". It starts by randomly guessing the
-embedding for the hidden word. During training the model sees the
-actual word, compares it to its own prediction, and updates its
-weights via [gradient descent](https://www.geeksforgeeks.org/machine-learning/gradient-descent-algorithm-and-its-variants/)
-to do better next time. To reduce mistakes, it generates vectors that
-are closer together for words that frequently appear together in its
-n-dimensional space.
+Imagine the model is tasked with predicting a masked word. The query:
+"the ___ chased the ball," "the ___ is a pet". It starts with randomly
+guessing the embedding for the hidden words. In our training data we
+allow the model to see the actual word, so that it can compare its own
+predictions with the actual prediction. With every wrong prediction
+the model learns to update its weights/parameters ([Gradient
+Descent](https://www.geeksforgeeks.org/machine-learning/gradient-descent-algorithm-and-its-variants/)),
+so that it hopefully makes a better prediction next time. To reduce
+the mistakes the model does it generates vectors that are closer
+together when they frequently appear together in its n-dimensional
+space.
 
-> Gradient descent, in short: compute the slope of the loss with
-> respect to each parameter, and move a tiny step downhill.
+Gradient descent says: compute the slope of the loss with respect to
+each parameter, and move a tiny step downhill.
 
 ```{r}
 #| label: load-data-embeddings
-df <- arrow::read_parquet("../data/wikipedia_nobel_biographies_summaries_clean.parquet") %>%
+df <- arrow::read_parquet("../data/wikipedia_nobel_biographies_summaries_clean.parquet")
+
+df <- df %>%
   drop_na()
 ```
 
@@ -238,33 +278,39 @@ library(data.table)
 # path to your embeddings file
 path <- "path/to/your/glove_or_dolma_embeddings.txt"
 
-# Read GloVe-style file (no header line, unlike fastText)
-emb <- fread(path, header = FALSE, quote = "", encoding = "UTF-8")
+# Read Glove file (no header line, unlike fastText)
+emb <- fread(path,header = FALSE,quote = "",encoding = "UTF-8")
 
 # Split into words + vectors
-words <- emb[[1]]
+words   <- emb[[1]]
 glove <- as.matrix(emb[, -1, with = FALSE])
 rownames(glove) <- words
 
 # Example: look up vector for "dog"
 glove["dog", ]
 
-dim(glove)  # e.g. 1,200,001 terms x 300 dimensions
+# dimensions
+dim(glove)
 ```
+
+The Glove embeddings contain 1200001 terms and 300 dimensions
+(columns).
 
 ```{r}
 #| label: nearest-neighbors-simple
 library(text2vec)
 
-similarities <- function(target_word, n) {
+similarities <- function(target_word, n){
+
   # Extract embedding of target word
-  target_vector <- glove[which(rownames(glove) %in% target_word), ]
+  target_vector <- glove[which(rownames(glove) %in% target_word),]
 
   # Calculate cosine similarity between target word and other words
   target_sim <- sim2(glove, matrix(target_vector, nrow = 1))
 
   # Report nearest neighbours of target word
-  names(sort(target_sim[, 1], decreasing = TRUE))[1:n]
+  names(sort(target_sim[,1], decreasing = T))[1:n]
+
 }
 
 similarities("woman", n = 7)
@@ -282,9 +328,8 @@ corp <- corpus(df, text_field = "extract")
 # Create vocab list based on dfm
 vocab <- featnames(
   dfm(tokens(corp, remove_punct = TRUE) %>%
-        tokens_tolower() %>%
-        tokens_remove(stopwords("en")))
-)
+      tokens_tolower() %>%
+      tokens_remove(stopwords("en"))))
 
 # Create function that selects the nearest neighbors
 nearest_from_summaries <- function(glove, query, top_n = 20, vocab = NULL) {
@@ -300,7 +345,7 @@ nearest_from_summaries <- function(glove, query, top_n = 20, vocab = NULL) {
   q_vec <- colMeans(glove[matches, , drop = FALSE])
 
   sims <- text2vec::sim2(cand, matrix(q_vec, nrow = 1),
-                          method = "cosine", norm = "l2")[, 1]
+                         method = "cosine", norm = "l2")[, 1]
 
   sims <- sims[setdiff(names(sims), matches)]
   sort(sims, decreasing = TRUE)[1:top_n]
@@ -309,17 +354,16 @@ nearest_from_summaries <- function(glove, query, top_n = 20, vocab = NULL) {
 
 ```{r}
 #| label: nearest-neighbors-query
+# 3) Examples
 # "female concept" neighbours (woman, women, female*)
 nn_female <- nearest_from_summaries(glove,
-  query = c("woman*", "women", "female*"),
-  top_n = 20, vocab = vocab
-)
+                                    query = c("woman*", "women", "female*"),
+                                    top_n = 20, vocab = vocab)
 
 # "male concept" neighbours (man, men, male*)
 nn_male <- nearest_from_summaries(glove,
-  query = c("man", "men", "male*"),
-  top_n = 20, vocab = vocab
-)
+                                  query = c("man", "men", "male*"),
+                                  top_n = 20, vocab = vocab)
 
 nn_female[1:20]
 nn_male[1:20]
@@ -327,107 +371,129 @@ nn_male[1:20]
 
 ## Visualization
 
-We can also plot word embeddings, reducing their dimensions to two.
-The closer terms are to one another, the closer they are in meaning.
+We can also plot our word embeddings. Therefore we need to use reduce
+our dimensions to two. The closer the terms are to one another, the
+closer they are in their meaning.
 
 ```{r}
 #| label: embedding-plot
 library(ggplot2)
 
-show_map <- function(words) {
-  M <- glove[intersect(words, rownames(glove)), , drop = FALSE]
-  Z <- prcomp(M, center = TRUE, scale. = FALSE)$x[, 1:2]
+show_map <- function(words){
+  M <- glove[intersect(words, rownames(glove)), , drop=FALSE]
+  Z <- prcomp(M, center=TRUE, scale.=FALSE)$x[,1:2]
 
-  df <- data.frame(Z, word = rownames(Z))
-  ggplot(df, aes(PC1, PC2, label = word)) +
-    geom_point() + ggrepel::geom_text_repel(size = 3)
+  df <- data.frame(Z, word=rownames(Z))
+  ggplot(df, aes(PC1, PC2, label=word)) +
+    geom_point() + ggrepel::geom_text_repel(size=3)
 }
 
-show_map(c("einstein", "curie", "planck", "nobel", "physicist", "chemist",
-           "literature", "ernaux", "peace", "literatur", "peac", "united"))
+show_map(c("einstein","curie","planck","nobel","physicist","chemist", "literature", "ernaux", "peace", "literatur", "peac", "united"))
 ```
 
 ## Large Language Models (LLMs)
 
 ### What are Large Language Models?
 
-Large Language Models (LLMs) are advanced AI models designed to
-understand, generate, and manipulate human language. They're built
-using deep learning, particularly neural networks, and trained on vast
-amounts of text data to learn language's statistical patterns and
-structures. A useful distinction: **foundation models** are pre-trained
-on a large corpus and can be fine-tuned for specific tasks; **LLMs**
-are a subset of foundation models specifically designed for NLP tasks.
+Large Language Models (LLMs) are advanced artificial intelligence
+models designed to understand, generate, and manipulate human
+language. They are built using deep learning techniques, particularly
+neural networks, and are trained on vast amounts of text data to
+learn the statistical patterns and structures of language. A useful
+distinction is between foundation models and LLMs. Foundation models
+are pre-trained on a large corpus of text data and can be fine-tuned
+for specific tasks. LLMs are a subset of foundation models that are
+specifically designed to handle natural language processing tasks.
 
-**Fine-tuning** — take a pre-trained model and specialize it for a
-downstream task, by training on a smaller, task-specific dataset while
-keeping the pre-trained weights as a starting point. This adapts the
-model to a task's specific nuances without training from scratch.
+**Finetuning**: When we fine-tune a model we used a pre-trained model
+and specialize it for our downstream task. This is done by training
+the model on a smaller, task-specific dataset while keeping the
+pre-trained weights as a starting point. Fine-tuning allows the model
+to adapt to the specific nuances and requirements of the target task,
+improving its performance without needing to train a new model from
+scratch.
 
-**Prompting** — instead of fine-tuning, provide specific prompts or
-instructions to guide the model's behavior. More flexible and
-adaptable, without extensive retraining.
+**Prompting**: Instead of fine-tuning the entire model, users can
+provide specific prompts or instructions to guide the model's
+behavior for a particular task. This approach allows for more
+flexibility and adaptability without the need for extensive
+retraining.
 
-Two flavors of prompting:
+There are two possible versions of prompting: **Zero Shot Learning**
+and **Few Shot Learning**. In zero-shot learning, the model is given
+a task without any prior examples or training on that specific task.
+The model relies solely on its pre-existing knowledge and
+understanding of language to generate a response. In few-shot
+learning, the model is provided with a small number of examples or
+demonstrations of the task at hand. These examples help the model
+understand the context and requirements of the task, allowing it to
+generate more accurate and relevant responses.
 
-- **Zero-shot learning** — the model gets a task with no prior
-  examples, relying solely on its pre-existing knowledge.
-- **Few-shot learning** — the model gets a small number of examples or
-  demonstrations to help it understand the task's context and
-  requirements.
-
-It's usually best to start with prompting, and only fine-tune if
-prompting doesn't work well enough — fine-tuning has high computational
-and labor costs and needs large amounts of labeled data.
+It is always a good idea to start with prompting and only fine-tune
+the model if prompting does not work well enough, due to the high
+computational and labour costs and the need for large amounts of
+labeled data.
 
 ### Why are LLMs so powerful?
 
-LLMs capture the complexities and nuances of human language, enabling a
-wide range of tasks with high accuracy: generating coherent,
-contextually relevant text, answering questions, translating,
-summarizing, and conversing. All LLMs are a form of **transformer
-model**. Transformers contain an *attention mechanism* that weighs the
-importance of different words in a sentence when making predictions —
-this captures long-range dependencies and context far more effectively
-than earlier models like RNNs or LSTMs, which is why LLMs are so
-transformational for the field.
+LLMs are powerful because they can capture the complexities and
+nuances of human language, enabling them to perform a wide range of
+tasks with high accuracy. They can generate coherent and contextually
+relevant text, answer questions, translate languages, summarize
+information, and even engage in conversations. Their ability to
+understand context and generate human-like responses makes them
+valuable tools for various applications, including chatbots, virtual
+assistants, content creation, and more. All LLMs are a form of a
+transformer model. Transformer model contain an attention mechanism
+that allows them to weigh the importance of different words in a
+sentence when making predictions. This enables them to capture
+long-range dependencies and context more effectively than previous
+models like RNNs or LSTMs, which is the reason why LLM's are so
+powerful and transformational within the field.
 
-**What are feedforward neural networks?**
+What are feedforward neural networks?
 
-![Feedforward Neural Network Architecture](../images/feedforward-nn.jpg)
+![Neural Network Architecture](../images/feedforward-nn.jpg)
 
-A feedforward neural network is an artificial neural network where
-connections between nodes don't form a cycle — information flows in
-one direction, from the input layer through one or more hidden layers
-to the output layer. Each node in a layer connects to every node in the
-next layer, and each connection has a weight determining the strength
-of that connection.
+A feedforward neural network is a type of artificial neural network
+where the connections between the nodes do not form a cycle. In this
+architecture, information flows in one direction, from the input
+layer through one or more hidden layers to the output layer. Each
+node (or neuron) in a layer is connected to every node in the
+subsequent layer, and each connection has an associated weight that
+determines the strength of the connection.
 
-See also: [StatQuest — Feedforward Neural Networks](https://www.youtube.com/watch?v=CqOfi41LfDw).
+[Statquest for Feedforward Neural
+Network](https://www.youtube.com/watch?v=CqOfi41LfDw)
 
 ### Transformer Models
+
+How does a transformer model work?
 
 ![Transformer Model](../images/transformer-model.png)
 
 A transformer model contains a stack of encoders and decoders. The
-encoder processes the input text through multiple layers of
-self-attention and feedforward networks to build a rich representation
-of the input. The decoder uses this representation to generate the
-output text, again through self-attention and feedforward layers. The
-attention mechanism lets the model focus on different parts of the
-input when generating each output word, capturing context and
-relationships effectively. Transformer models learn to understand
-language through next-word/sentence prediction and masking particular
-words.
+encoder takes the input text and processes it through multiple layers
+of self-attention and feedforward neural networks to create a rich
+representation of the input. The decoder then uses this representation
+to generate the output text, also through multiple layers of
+self-attention and feedforward networks. The attention mechanism
+allows the model to focus on different parts of the input when
+generating each word in the output, enabling it to capture context and
+relationships effectively. The models learned to understand language
+by next word/sentence prediction and masking particular words.
 
-## Running Local LLMs with Ollama
+## What is Ollama?
 
-Llama is an LLM developed by Meta and, unlike many competitors, is open
-source. It's not as large as GPT-3 or GPT-4, but still powerful and
-usable for a variety of tasks. [Ollama](https://ollama.com/) is a
-platform for running and managing LLMs on your local machine, with an
-easy-to-use interface for developers and researchers who want to
-leverage LLMs without extensive infrastructure or cloud services.
+Llama is a LLM developed by meta and is in comparison to many other
+competitors an open source model. It is not as large as GPT-3 or
+GPT-4, but it is still a powerful model that can be used for a
+variety of tasks. Ollama is a platform that allows you to run and
+manage large language models (LLMs) on your local machine. It
+provides an easy-to-use interface for interacting with these models,
+making it accessible for developers and researchers who want to
+leverage the power of LLMs without needing extensive infrastructure
+or cloud services.
 
 ```{r}
 #| label: rollama-setup
@@ -436,45 +502,44 @@ library(rollama)
 # available models you have installed locally
 list_models()
 
-# pull_model("mistral:7B")  # download a model
+# Example usage
+# pull_model("mistral:7B") # download a model
 
-ping_ollama()  # check if the Ollama server is reachable
+ping_ollama() # let's check if it is there
 ```
 
 System and user prompts are core components of prompt engineering. A
-**system prompt** gives the model foundational instructions — assigning
-a role ("You are a research assistant") and constraints (ethical
-guidelines, style, behavior). System prompts are typically consistent
-across sessions. A **user prompt** contains task-specific instructions
-("Classify these sentences into categories"), possibly with extra
-context or examples.
+system prompt provides foundational instructions to the model, such
+as assigning a role ("You are a research assistant" or "You are an
+expert in X") and specifying constraints (e.g., ethical guidelines,
+style, or behavior). System prompts are typically consistent across
+many users or sessions. In contrast, a user prompt contains
+task-specific instructions, such as "Classify these sentences into
+categories," and may include additional context or examples to help
+the model perform the task effectively.
 
-We'll try zero-shot learning first: get some text, construct the
-prompt, and send it to the model.
+We'll try out zero shot learning first: We first need a some text.
+Then we construct the prompt and send it to the model.
 
 ```{r}
 #| label: rollama-query
 # We can simply talk to the model
 rollama::query("What is the capital of New York", model = "llama3.1")
 
-# Construct the query: a system message assigns a role, then the
-# user prompt supplies the task-specific text.
+# lets construct the query
+
+# Therefore we need a system message and a user prompt template.
+# A system message usually starts with a role we're assigning.
+
 df$zero <- NA_character_
 
 for (i in 1:2) {
-  question <- "Task: You're a research assistant that helps to analyze texts. Your aim is to classify whether the summary of a biography describes a female or a male Nobel prize winner."
+  print(i)
+  question <- "Task: You're a research assistant that helps to analyze texts. Your aim is to classify whether the summary of a biographie describes a female or a male nobel price winner."
   text <- df$extract[i]
   question <- paste(question, text)
-  result <- query(question, model = "llama3.1")
+  result <- query(question, model ="llama3.1")
   print(result)
   df$zero[i] <- result[[1]]$message$content
 }
 ```
-
-::: {.callout-tip}
-That's a lot of ground for half a day. If you're tight on time in the
-room, the first candidates to trim are the **word embeddings** code
-walkthrough (keep the concept, skip live-coding the GloVe lookup) and
-the **Ollama zero-shot loop** (demo it live once rather than having
-everyone run it).
-:::

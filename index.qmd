@@ -26,7 +26,7 @@ Day 1.
   and transformer models.
 
 See the [Schedule](schedule.qmd) for the day-by-day breakdown, or jump
-straight to the [Slides](slides/day1.qmd) or [Notes](notes/day1.qmd).
+straight to the [Day 1 notes](notes/day1.qmd).
 
 ## Credit points
 
