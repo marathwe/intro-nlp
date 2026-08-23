@@ -6,8 +6,14 @@ IF/
 # European Social Survey data has redistribution restrictions — never publish
 data/ESS_2018_all_kurz.dta
 
-# Word embeddings archives are huge (GBs) and don't belong in git history
+# Word embeddings archives/dumps are huge (GBs) and don't belong in git
+# history — data/agency_dictionary.txt and communion_dictionary.txt are
+# fine, they're tiny; this is specifically for things like GloVe/Dolma
+# vector dumps.
 data/*.zip
+data/*glove*.txt
+data/*embeddings*.txt
+data/dolma_300_2024_1.2M.100_combined.txt
 
 # Journal-article PDFs: copyright/redistribution rights not confirmed —
 # cite and link instead of publishing full text. See notes/day2.qmd for

@@ -161,7 +161,7 @@ confusion_test_statistics
 
 # ---- Word Embeddings ----------------------------------------------------
 
-df <- arrow::read_parquet("../data/wikipedia_nobel_biographies_summaries_clean.parquet")
+df <- arrow::read_parquet("/Users/maraweber/Documents/PGTA/summerschool/data/wikipedia_nobel_biographies_summaries_clean.parquet")
 
 df <- df %>%
   drop_na()
@@ -169,7 +169,7 @@ df <- df %>%
 library(data.table)
 
 # path to your embeddings file
-path <- "path/to/your/glove_or_dolma_embeddings.txt"
+path <- "/Users/maraweber/Documents/PGTA/summerschool/data/dolma_300_2024_1.2M.100_combined.txt"
 
 # Read Glove file (no header line, unlike fastText)
 emb <- fread(path,header = FALSE,quote = "",encoding = "UTF-8")

@@ -12,11 +12,7 @@ included along the way.
 ## Download R and R Studio
 
 To use R Studio, first download R, then R Studio — in that order. R is
-the programming language; R Studio is the interface. Use
-[posit.co/download/rstudio-desktop](https://posit.co/download/rstudio-desktop/)
-for both, or get R directly from
-[CRAN](https://cran.r-project.org/). Make sure the R version matches
-your operating system and, on a Mac, your processor. After
+the programming language; R Studio is the interface. Get R directly from [CRAN](https://cran.r-project.org/) and R Studio from here [posit.co/download/rstudio-desktop](https://posit.co/download/rstudio-desktop/). Make sure the R version matches your operating system and, on a Mac, your processor. After
 downloading, the installer should start automatically.
 
 ## R Studio interface & Markdown
@@ -32,7 +28,7 @@ access to function documentation.
 ## What are packages?
 
 Packages are collections of commands, which must be loaded into R
-Studio before they can be used — the same way you have to be taught
+Studio before they can be used, the same way you have to be taught
 something before you can apply it.
 
 Installing a package (name in quotation marks, since it's a string):
@@ -42,7 +38,7 @@ Installing a package (name in quotation marks, since it's a string):
 ```
 
 Packages only need to be installed once. Before an already-installed
-package can be used, it needs to be **loaded** — this time without
+package can be used, it needs to be **loaded**, this time without
 quotation marks:
 
 ```{r}
@@ -89,7 +85,7 @@ helps to write everything in lowercase to avoid this source of error.
 
 Different objects hold different classes of values, which determine
 what operations are valid on them. A character object supports only
-very limited mathematical operations — taking the square root of
+very limited mathematical operations, taking the square root of
 `"Hello World"` doesn't make sense, and R will tell you so.
 
 ```{r}
@@ -110,7 +106,7 @@ class(bool)
 class(bool_2)
 ```
 
-We can also calculate with objects — often not just a single value,
+We can also calculate with objects, often not just a single value,
 but a whole vector:
 
 ```{r}
@@ -160,7 +156,7 @@ Windows paths use double backslashes (`\\`) instead of a single slash
 (`/`).
 
 We'll use the **Titanic** dataset (887 passengers) for the exercises
-below. It's in Stata's `.dta` format — readable in R via the `haven`
+below. It's in Stata's `.dta` format, readable in R via the `haven`
 package's `read_dta()` (a plain CSV would use `read.csv()` instead).
 
 [⬇ Download `Titanic.dta` (92 KB)](../data/Titanic.dta){.btn .btn-outline-primary role="button" download="Titanic.dta"}
@@ -206,7 +202,7 @@ proportions. To interpret these you need to know how the variables are
 coded.
 
 ```{r}
-gender_distribution <- table(df$female)
+gender_distribution <- table(df$sex)
 gender_distribution
 
 proptable <- prop.table(gender_distribution)
@@ -214,10 +210,10 @@ round(proptable, digits = 2)
 ```
 
 ```{r}
-urban_distribution <- table(df$urban)
-urban_distribution
+survived_distribution <- table(df$survived)
+survived_distribution
 
-proptable <- prop.table(urban_distribution)
+proptable <- prop.table(survived_distribution)
 round(proptable, digits = 2)
 ```
 
@@ -225,18 +221,19 @@ round(proptable, digits = 2)
 variable after the comma:
 
 ```{r}
-tab_2 <- table(df$female, df$urban)  # gender x urban/rural
+tab_2 <- table(df$sex, df$survived)  # sex x survived
 tab_2
 ```
 
 The result isn't very readable without knowing the coding — here,
-`female`: 0 = male, 1 = female; `urban`: 0 = rural, 1 = urban. Add
-labels with `dimnames()`:
+`survived`: 0 = died, 1 = survived. Add labels with `dimnames()`:
 
 ```{r}
-dimnames(tab_2) <- list(gender = c("male", "female"), residence = c("rural", "urban"))
+dimnames(tab_2) <- list(sex = c("female", "male"), survived = c("died", "survived"))
 tab_2
 ```
+
+("Women and children first": 74% of women survived, vs. 19% of men.)
 
 ```{r}
 proptable <- prop.table(tab_2)
@@ -304,11 +301,11 @@ trailing pipe.
 
 ```{r}
 df_clean <- df %>%
-  select(female, happy, trust, income) %>%  # pick specific columns
-  filter(female == 1) %>%                    # pick specific rows
-  rename(gender = "female")                  # rename a variable
+  select(sex, age, fare, survived) %>%  # pick specific columns
+  filter(sex == "female") %>%            # pick specific rows
+  rename(gender = "sex")                 # rename a variable
 
-# na.omit(df_clean$income)  # drop missing values
+# na.omit(df_clean$fare)  # drop missing values
 ```
 
 ### What's the difference between `=` and `==`?
@@ -330,11 +327,11 @@ single equals sign is an assignment operator.
 Most data wrangling can be done with tidyverse functions, but
 sometimes it's easier to think in if-then conditions.
 
-We want a new variable that's `"low"` when income is ≤ 5, and
-`"high"` otherwise:
+We want a new variable that's `"low"` when the fare is at or below the
+median, and `"high"` otherwise:
 
 ```{r}
-df_clean$income_category <- ifelse(df_clean$income <= 5, "low", "high")
+df_clean$fare_category <- ifelse(df_clean$fare <= median(df$fare), "low", "high")
 View(df_clean)
 ```
 
