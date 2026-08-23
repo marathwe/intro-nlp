@@ -30,6 +30,7 @@ model evaluation.
 
 ```{r}
 #| label: train-test-split
+library(tidyverse)
 library(arrow)
 library(quanteda)
 library(quanteda.textmodels)
