@@ -159,16 +159,16 @@ folder, and you still need to append the file name and extension.
 Windows paths use double backslashes (`\\`) instead of a single slash
 (`/`).
 
-::: {.callout-tip}
-The example below reads a CSV file. There are other common formats,
-e.g. Stata's `.dta`, readable in R via the `haven` package's
-`read_dta()`. Swap in whichever dataset and format you're using for
-this session's exercises.
-:::
+We'll use the **Titanic** dataset (887 passengers) for the exercises
+below. It's in Stata's `.dta` format — readable in R via the `haven`
+package's `read_dta()` (a plain CSV would use `read.csv()` instead).
+
+[⬇ Download `Titanic.dta` (92 KB)](../data/Titanic.dta){.btn .btn-outline-primary role="button" download="Titanic.dta"}
 
 ```{r}
 #| label: import-data
-df <- read.csv("path/to/your/dataset.csv")
+library(haven)
+df <- read_dta("../data/Titanic.dta")
 ```
 
 Check the Environment pane (top right) to confirm the dataset loaded —
@@ -278,12 +278,12 @@ A boxplot:
 
 ```{r}
 # Preprocessing before plotting
-df$female <- as.factor(df$female)
-df <- df[!is.na(df$female), ]
+df$sex <- as.factor(df$sex)
+df <- df[!is.na(df$sex), ]
 df <- df[!is.na(df$age), ]
 
 df %>%
-  ggplot(aes(x = female, y = age, group = female)) +
+  ggplot(aes(x = sex, y = age, group = sex)) +
   geom_boxplot()
 ```
 

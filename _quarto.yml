@@ -9,6 +9,7 @@ project:
   resources:
     - "data/*.parquet"
     - "data/*.txt"
+    - "data/Titanic.dta"
 
 website:
   title: "Introduction to NLP"

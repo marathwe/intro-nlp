@@ -34,14 +34,21 @@ Day 1).
   Dictionaries section to compare agentic/communal language by gender.
   Glob-pattern stems (e.g. `achieve*`) — quanteda's `dictionary()`
   matches these natively.
+- `Titanic.dta` — 887 passengers; `survived`, `pclass`, `name`, `sex`,
+  `age`, `siblingsspousesaboard`, `parentschildrenaboard`, `fare`,
+  `male`. A widely-redistributed teaching copy of the historical
+  passenger manifest (public factual record, not personal/restricted
+  data like the ESS survey below). Used throughout `setup.qmd`.
 
-All four are declared under `project: resources:` in `_quarto.yml` so
+All five are declared under `project: resources:` in `_quarto.yml` so
 Quarto copies them into `_site/data/` on every render/publish, and
-linked as download buttons from `notes/day1.qmd` and `notes/day2.qmd`.
-Parquet was chosen over the earlier `.qs` versions so the Nobel data
-files are readable outside R too (e.g. pandas, DuckDB), via the
-`arrow` package's `read_parquet()`.
+linked as download buttons from `setup.qmd`, `notes/day1.qmd`, and
+`notes/day2.qmd`. Parquet was chosen over the earlier `.qs` versions
+so the Nobel data files are readable outside R too (e.g. pandas,
+DuckDB), via the `arrow` package's `read_parquet()`. `Titanic.dta`
+is deliberately listed as its own explicit resource entry rather than
+a `data/*.dta` glob — a wildcard would also sweep up the gitignored
+`ESS_2018_all_kurz.dta` into any local `_site/` build.
 
-**Do not add** `Titanic.dta` or `ESS_2018_all_kurz.dta` here without
-checking their license/redistribution terms first — see the
-`.gitignore` entry for the latter.
+**Do not add** `ESS_2018_all_kurz.dta` here — see the `.gitignore`
+entry.
