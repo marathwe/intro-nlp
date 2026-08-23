@@ -1,192 +1,5 @@
 [
   {
-    "objectID": "slides/day2.html#recap-dfm-tf-idf",
-    "href": "slides/day2.html#recap-dfm-tf-idf",
-    "title": "Day Two (Half Day)",
-    "section": "Recap: DFM & tf-idf",
-    "text": "Recap: DFM & tf-idf\n\nCorpus → tokens → DFM → tf-idf weighting\nRows = docs, columns = terms, cells = (weighted) frequency",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#supervised-vs.-unsupervised-learning",
-    "href": "slides/day2.html#supervised-vs.-unsupervised-learning",
-    "title": "Day Two (Half Day)",
-    "section": "Supervised vs. unsupervised learning",
-    "text": "Supervised vs. unsupervised learning\n\nSupervised: labeled data, learn a mapping inputs → outputs (classification, regression) — our focus today\nUnsupervised: no labels, discover structure (clustering, topic modeling) — see the Day 1 notes if you want to explore this on your own\nTarget feature: gender (female/male); predictor: the biography text\nSplit into train (80%) / test (20%) sets — watch for class imbalance when splitting",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#dictionaries",
-    "href": "slides/day2.html#dictionaries",
-    "title": "Day Two (Half Day)",
-    "section": "Dictionaries",
-    "text": "Dictionaries\n\nPredefined word lists mapped to categories (e.g. pronouns → gender)\nClassify by counting dictionary-word occurrences per document\n\n\ndict_gender &lt;- dictionary(list(\n  female = c(\"she\",\"her\",\"hers\",\"herself\"),\n  male   = c(\"he\",\"him\",\"his\",\"himself\")\n))\ndfm_pron &lt;- dfm_lookup(dfm_all, dict_gender)",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#naive-bayes-classification",
-    "href": "slides/day2.html#naive-bayes-classification",
-    "title": "Day Two (Half Day)",
-    "section": "Naive Bayes Classification",
-    "text": "Naive Bayes Classification\n\nProbabilistic classifier based on Bayes’ Theorem\n“Naive”: assumes features are conditionally independent given the class\nWidely used for high-dimensional data like text\n\n\nnb_train &lt;- textmodel_nb(x = dfm_train, y = y, prior = \"docfreq\")\npredict(nb_train, newdata = dfm_test, type = \"class\")",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#model-evaluation",
-    "href": "slides/day2.html#model-evaluation",
-    "title": "Day Two (Half Day)",
-    "section": "Model evaluation",
-    "text": "Model evaluation\n\\[Accuracy = \\frac{\\text{Correct}}{\\text{Total}} \\quad\nPrecision = \\frac{TP}{FP+TP} \\quad\nRecall = \\frac{TP}{FN+TP}\\]\n\\[F_1 = 2 \\times \\frac{Precision \\times Recall}{Precision + Recall}\\]\n\nClass imbalance → the model may just always predict the majority class",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#task",
-    "href": "slides/day2.html#task",
-    "title": "Day Two (Half Day)",
-    "section": "Task",
-    "text": "Task\n\nWhy do we track precision/recall separately instead of just accuracy?\nWhy might the true negative rate be zero on an imbalanced set?\nBonus: build a STEM vs. non-STEM prize classifier",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#what-are-word-embeddings",
-    "href": "slides/day2.html#what-are-word-embeddings",
-    "title": "Day Two (Half Day)",
-    "section": "What are word embeddings?",
-    "text": "What are word embeddings?\n\n“You shall know a word by the company it keeps” (Firth, 1957)\nRepresent each word as a dense vector; similar meaning → nearby vectors\nPre-trained on huge corpora: Word2Vec, GloVe, fastText\nWindow size = how many words of context count around a target word",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#how-are-they-trained",
-    "href": "slides/day2.html#how-are-they-trained",
-    "title": "Day Two (Half Day)",
-    "section": "How are they trained?",
-    "text": "How are they trained?\n\nModel predicts a masked word from context (“the ___ chased the ball”)\nCompares its guess to the real word, updates weights via gradient descent\nWords that co-occur often end up with nearby vectors",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#loading-embeddings-nearest-neighbors",
-    "href": "slides/day2.html#loading-embeddings-nearest-neighbors",
-    "title": "Day Two (Half Day)",
-    "section": "Loading embeddings & nearest neighbors",
-    "text": "Loading embeddings & nearest neighbors\n\nlibrary(data.table)\nemb &lt;- fread(\"path/to/embeddings.txt\", header = FALSE, quote = \"\")\nwords &lt;- emb[[1]]\nglove &lt;- as.matrix(emb[, -1, with = FALSE])\nrownames(glove) &lt;- words\n\nglove[\"dog\", ]   # look up a word's vector\n\n\nlibrary(text2vec)\nsims &lt;- sim2(glove, matrix(glove[\"woman\", ], nrow = 1))\nnames(sort(sims[, 1], decreasing = TRUE))[1:7]",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#visualization",
-    "href": "slides/day2.html#visualization",
-    "title": "Day Two (Half Day)",
-    "section": "Visualization",
-    "text": "Visualization\n\nReduce embedding dimensions (PCA) down to 2 for plotting\nCloser points ≈ closer meaning\n\n\nZ &lt;- prcomp(glove[c(\"einstein\",\"curie\",\"nobel\",\"peace\"), ])$x[, 1:2]",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#what-are-large-language-models",
-    "href": "slides/day2.html#what-are-large-language-models",
-    "title": "Day Two (Half Day)",
-    "section": "What are Large Language Models?",
-    "text": "What are Large Language Models?\n\nDeep learning models trained on vast text corpora to model language\nFoundation models → pre-trained, general-purpose\nLLMs → foundation models specialized for language tasks\nFine-tuning vs. prompting (zero-shot / few-shot)\nPrefer prompting first — fine-tuning is costly and data-hungry",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#why-are-llms-so-powerful",
-    "href": "slides/day2.html#why-are-llms-so-powerful",
-    "title": "Day Two (Half Day)",
-    "section": "Why are LLMs so powerful?",
-    "text": "Why are LLMs so powerful?\n\nAll LLMs are transformer models\nAttention — weighs the importance of each word when predicting the next one\nCaptures long-range dependencies better than RNNs/LSTMs",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#feedforward-neural-networks",
-    "href": "slides/day2.html#feedforward-neural-networks",
-    "title": "Day Two (Half Day)",
-    "section": "Feedforward neural networks",
-    "text": "Feedforward neural networks\n\nInformation flows one direction: input → hidden layer(s) → output\nNo cycles; every node connects to every node in the next layer, each connection weighted\n\n\nFeedforward neural network",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#transformer-models",
-    "href": "slides/day2.html#transformer-models",
-    "title": "Day Two (Half Day)",
-    "section": "Transformer Models",
-    "text": "Transformer Models\n\nStack of encoders + decoders\nEncoder: self-attention + feedforward layers → rich input representation\nDecoder: generates output using that representation, also via self-attention\nTrained via next-word prediction & masked-word prediction\n\n\nTransformer model",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#running-local-llms-with-ollama",
-    "href": "slides/day2.html#running-local-llms-with-ollama",
-    "title": "Day Two (Half Day)",
-    "section": "Running local LLMs with Ollama",
-    "text": "Running local LLMs with Ollama\n\nOllama runs open LLMs (e.g. Llama) locally\nNo cloud dependency, full control over the model\n\n\nlibrary(rollama)\nlist_models()\nping_ollama()",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#system-vs.-user-prompts",
-    "href": "slides/day2.html#system-vs.-user-prompts",
-    "title": "Day Two (Half Day)",
-    "section": "System vs. user prompts",
-    "text": "System vs. user prompts\n\nSystem prompt — assigns a role & constraints (“You are a research assistant…”)\nUser prompt — the task-specific instruction + content\n\n\nquestion &lt;- \"Task: classify whether this biography summary\n  describes a female or male Nobel laureate.\"\nquery(paste(question, df$extract[1]), model = \"llama3.1\")",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
-    "objectID": "slides/day2.html#task-1",
-    "href": "slides/day2.html#task-1",
-    "title": "Day Two (Half Day)",
-    "section": "Task",
-    "text": "Task\n\nZero-shot classify a handful of biography summaries by gender using rollama\nCompare the LLM’s predictions to the Naive Bayes classifier from earlier today — where do they agree/disagree, and why?",
-    "crumbs": [
-      "Slides",
-      "Day 2 (half day)"
-    ]
-  },
-  {
     "objectID": "setup.html",
     "href": "setup.html",
     "title": "Setup: First Steps with R Studio",
@@ -363,7 +176,7 @@
     "section": "",
     "text": "Natural Language Processing (NLP) is an interdisciplinary field between computer science and linguistics, which ultimately aims to quantitatively represent text in such a form that computers can understand it. The methods developed within NLP are used in a variety of different fields and applications, such as sociology, political science, and various private companies. Due to the growing availability of digital trace data, NLP has become a transformative subfield that affects most people’s daily lives through the latest advances in machine learning.",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -374,7 +187,7 @@
     "section": "",
     "text": "Natural Language Processing (NLP) is an interdisciplinary field between computer science and linguistics, which ultimately aims to quantitatively represent text in such a form that computers can understand it. The methods developed within NLP are used in a variety of different fields and applications, such as sociology, political science, and various private companies. Due to the growing availability of digital trace data, NLP has become a transformative subfield that affects most people’s daily lives through the latest advances in machine learning.",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -385,7 +198,7 @@
     "section": "Let’s talk a bit about Wikipedia",
     "text": "Let’s talk a bit about Wikipedia\nWikipedia is a free online encyclopedia, created and edited by volunteers around the world and hosted by the Wikimedia Foundation since 2001. It is one of the largest and most popular general reference works on the internet, with millions of articles in multiple languages. Wikipedia is written collaboratively by largely anonymous volunteers who write without pay. Anyone with internet access can write and make changes to Wikipedia articles, except in limited cases where editing is restricted to prevent disruption or vandalism.\nWikipedia is a reflection of our contemporary knowledge production — it crucially shapes what people know and how they remember the past. Wikipedia is influencing media content, scientific research, foundational for generative AI, and ordinary citizens’ real-life decisions. Journalistic work has additionally shown that political groups proactively seek to edit Wikipedia in their favor, such as politicians or far-right actors (. Previous research has shown that number editors on Wikipedia are limited and predominantly male, reflecting persisting patterns of gender inequality in other aspects of society.",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -396,7 +209,7 @@
     "section": "Web Scraping",
     "text": "Web Scraping\nThe current advances in machine learning, combined with the growing amount of digital data, have led to a new interest in NLP. Web scraping is the process where we “scrape” data from the web, which is then used to train a model. Compared to traditional data collection methods, web scraping allows us to gather far more data in a much shorter time.\nWe can either scrape data from a website (static) or from an Application Programming Interface (dynamic). The latter is often more efficient, as it allows us to access data directly from the source without having to parse HTML. rvest is a package that helps you scrape data from web pages statically. We’re scraping the award table on this Wikipedia page.\n\n# Install and import packages\n# install.package(\"pacman\")\nlibrary(pacman)\npacman::p_load(\"rvest\", \"tidyverse\")\n\n# Define the URL of the page we want to scrape\nurl &lt;- read_html(\"https://en.wikipedia.org/wiki/List_of_Nobel_laureates\")\n\n# Extract the table from the page\nnobel_table &lt;- url %&gt;%\n  html_node(\"table\") %&gt;%   # selects the first table on the page\n  html_table()              # converts the HTML table to a data frame\n\n\nAPI\nScraping data through the Wikipedia web API is relatively easy. An API is a piece of software that allows two pieces of software to talk to each other, in most cases through an HTTP request — similar to the request your browser sends when it asks a server for a page’s HTML.\nThe process is roughly always the same:\n\nYou connect to the URL of your API, e.g. en.wikipedia.org/w/api.php\nYou send an HTTP GET request to the API with specific parameters — this tells the API what you want.\nYou retrieve a response, usually in JSON.\n\n\nlibrary(httr2)\n\nget_last_revision &lt;- function(page_title, continue_parameter = NULL,\n                               user_agent = \"Polmem_ucl\") {\n  baseurl &lt;- \"https://en.wikipedia.org/w/api.php\"\n\n  params &lt;- list(\n    action  = \"query\",\n    format  = \"json\",\n    titles  = as.character(page_title),\n    prop    = \"revisions\",\n    rvprop  = \"ids|timestamp|user|userid|comment|size|content\",\n    rvslots = \"main\",\n    rvlimit = 1,       # just the latest\n    rvdir   = \"older\"  # newest first; single item is current revision\n  )\n\n  if (!is.null(continue_parameter)) params$rvcontinue &lt;- continue_parameter\n\n  resp &lt;- request(baseurl) %&gt;%\n    req_user_agent(user_agent) %&gt;%\n    req_url_query(!!!params) %&gt;%\n    req_perform()\n\n  json &lt;- resp_body_json(resp)\n\n  pages &lt;- json$query$pages\n  if (is.null(pages) || !length(pages)) return(data.frame())\n\n  pg &lt;- pages[[1]]\n  if (is.null(pg$revisions) || !length(pg$revisions)) return(data.frame())\n\n  rv &lt;- pg$revisions[[1]]\n  slots &lt;- rv$slots$main\n\n  data.frame(\n    page_title    = pg$title %||% NA_character_,\n    page_id       = as.character(pg$pageid %||% NA),\n    revid         = as.character(rv$revid %||% NA),\n    parentid      = as.character(rv$parentid %||% NA),\n    user          = as.character(rv$user %||% NA_character_),\n    userid        = as.character(rv$userid %||% NA),\n    timestamp     = as.character(rv$timestamp %||% NA_character_),\n    size          = as.character(rv$size %||% NA),\n    comment       = as.character(rv$comment %||% NA_character_),\n    contentmodel  = slots$contentmodel %||% NA_character_,\n    contentformat = slots$contentformat %||% NA_character_,\n    content       = slots[[\"*\"]] %||% NA_character_,\n    check.names = FALSE,\n    stringsAsFactors = FALSE\n  )\n}\n\n# Applying the function\npage_content_revision &lt;- get_last_revision(\"List of Nobel laureates\")\n\n\n\nUsing Wrappers\nFor most relatively accessible APIs, someone has built a wrapper. There exist two main wrappers for Wikipedia in R: WikipediR and wikkitidy. We use the WikipediR package, which lets us send requests to the Wikipedia API in just a few lines of code. We only need to specify the language, the project, and the page name. Unfortunately, WikipediR does not parse the HTML for us, so we use the XML package to parse it and extract the table.\n\nlibrary(WikipediR)\nlibrary(XML)\n\n# WikipediR wrapper\npage_content_nobel &lt;- WikipediR::page_content(\n  language = \"en\", project = \"wikipedia\",\n  page_name = \"List of Nobel laureates\", clean_response = TRUE\n)\n\n# Parsing the html\nparsed_html &lt;- htmlParse(page_content_nobel, asText = TRUE)\nfirst_table &lt;- readHTMLTable(parsed_html, which = 1, stringsAsFactors = FALSE)\ncolnames(first_table) &lt;- first_table[1, ]\nfirst_table &lt;- first_table[-1, ]\n\n\n\nTask\n\nScrape the biographies of the female and male Nobel laureates from Wikipedia. You can do this dynamically or statically — if dynamically, use the WikipediR or wikkitidy package.\nWikipedia helps us here via its category structure: scrape all pages and their content under Category: Lists of Nobel laureates.\n\nOne approach: use pages_in_category() from WikipediR to retrieve all pages within the “Women Nobel laureates” category. There isn’t a similar category for men, so pivot the nobel_table scraped earlier, filter out the names, and merge.\n\n# Retrieving all pages in the category (but not content yet)\nall_pages_category_women &lt;- WikipediR::pages_in_category(\n  \"en\", \"wikipedia\", categories = \"Women Nobel laureates\",\n  clean_response = TRUE\n)\nall_pages_category_women &lt;- all_pages_category_women[-c(1, 2), ]\n\nnobel_table &lt;- nobel_table %&gt;%\n  slice(-n()) %&gt;%\n  pivot_longer(-Year, names_to = \"category\", values_to = \"laureates\") %&gt;%\n  rename(title = laureates)\n\nwomen &lt;- left_join(all_pages_category_women, nobel_table, by = \"title\") %&gt;%\n  select(title, category, Year) %&gt;%\n  mutate(gender = \"female\")\n\nmen &lt;- nobel_table %&gt;%\n  filter(!title %in% women$title) %&gt;%\n  mutate(gender = \"male\")\n\nall_winners &lt;- bind_rows(women, men)\n\n\n\nShow solution\n# preprocess the scraped data to get a clean list of names\nnames_tbl &lt;- all_winners %&gt;%\n  filter(!is.na(title), nzchar(title), tolower(str_trim(title)) != \"none\") %&gt;% # delete all empty cells\n  # drop “no award” rows that are just dashes (any kind)\n  filter(!str_detect(title, \"^[[:space:]]*[—–-]+[[:space:]]*$\")) %&gt;%\n  # some cells have multiple winners separated by semicolons\n  separate_rows(title, sep = \"\\\\s*;\\\\s*\") %&gt;%\n  # strip bracketed citation markers like [a], [13]\n  mutate(title = str_remove_all(title, \"\\\\[(?:\\\\d+|[A-Za-z])\\\\]\")) %&gt;%\n  mutate(title = str_squish(title)) %&gt;%\n  filter(!title %in% c(\"None\", \"List of women Nobel laureates\", \"Cancelled due to World War II\")) %&gt;%\n  filter(nzchar(title))\n\n# unique vector of names\nall_names &lt;- names_tbl %&gt;%\n  distinct(title) %&gt;%\n  arrange(title) %&gt;%\n  pull(title)\n\nsummaries_pages &lt;- data.frame()\n\nfor (title in all_names) {\n  \n  summary_page &lt;- tryCatch(wikkitidy::get_page_summary(language = \"en\", title = title),\n    error = function(e) NULL)\n  \n  if (!is.null(summary_page)) {\n    summaries_pages &lt;- bind_rows(summaries_pages, summary_page)\n  }\n}",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -407,7 +220,7 @@
     "section": "Data Preparation",
     "text": "Data Preparation\nA pre-scraped data set is provided, containing all summaries of the biographies of all award winners, with columns:\n\npageid — unique identifier for each Wikipedia page\ntitle — the Wikipedia page title (the laureate’s name)\nextract — the summary of the biography\nrevision — unique identifier for the specific page revision\ngender — whether the awarded individual was female or male\n\n⬇ Download wikipedia_nobel_biographies_summaries_clean.parquet (226 KB)\n\nlibrary(arrow)\n\nclean_text_data &lt;- read_parquet(\"../data/wikipedia_nobel_biographies_summaries_clean.parquet\")\nglimpse(clean_text_data)\n\nclean_text_data &lt;- clean_text_data %&gt;%\n  drop_na(title)\n\n# Gender distribution\nproptable &lt;- prop.table(table(clean_text_data$gender))\nround(proptable, digits = 2)\n\nLooking at the gender distribution reveals how imbalanced Nobel prizes are with respect to gender — only about 4.6% of all prizes were awarded to women. Let’s find out how these women are depicted on Wikipedia.\n\nOptional Task\n⬇ Download wikipedia_nobel_biographies_summaries_clean_extended.parquet (229 KB)\n\nRead the wikipedia_nobel_biographies_summaries_clean_extended.parquet data set and store it in a new object.\nDrop NA values in the title variable.\nSelect a subset of columns, but keep the gender column.\nFilter out only female instances.\n\n\n\nShow solution\nwiki_summaries_ex &lt;- read_parquet(\"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet\")\n\nwiki_summaries_ex &lt;- wiki_summaries_ex %&gt;%\n  drop_na(title) %&gt;%\n  select(pageid, title, extract, revision, gender) %&gt;%\n  filter(gender == \"female\")",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -418,7 +231,7 @@
     "section": "Text Preprocessing",
     "text": "Text Preprocessing\nText preprocessing transforms raw text data into a clean, structured format suitable for analysis. Scraping your own data is often painful — the goal of preprocessing is to enhance the quality of the text by removing noise, inconsistencies, and irrelevant information.\nWe first create a corpus — our set of documents with their corresponding text (e.g. different Wikipedia articles). A corpus consists of documents, which consist of sentences, which consist of terms.\nCommon preprocessing techniques:\n\nTokenization — breaking text into smaller units (words, phrases, or sentences).\nLowercasing — ensures uniformity and reduces complexity.\nRemoving punctuation and special characters — these usually don’t contribute to meaning.\nRemoving stop words — common words (“and”, “the”, “is”) that don’t carry much meaning.\nStemming and lemmatization — reduce words to their base/root form.\n\nWe use the quanteda package for text preprocessing.\n\nlibrary(quanteda)\n\n# Create corpus\ncorpus &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\n\n# Tokenization\ntokens &lt;- corpus %&gt;%\n  tokens(remove_punct = TRUE,\n         remove_symbols = TRUE) %&gt;%\n  tokens_remove(stopwords(\"en\"), padding = FALSE) %&gt;%\n  tokens_tolower() %&gt;%\n  tokens_compound(pattern = clean_text_data$title, concatenator = \"_\", case_insensitive = FALSE) %&gt;%\n  tokens_compound(pattern = \"nobel prize\", concatenator = \"_\", case_insensitive = FALSE) %&gt;%\n  tokens_wordstem()",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -429,7 +242,7 @@
     "section": "The Document-Feature Matrix (DFM)",
     "text": "The Document-Feature Matrix (DFM)\nA Document-Feature Matrix (DFM), or Document-Term-Matrix (DTM), is a structured representation of text data that captures the frequency or presence of words (features) across a collection of documents. Rows represent documents, columns represent unique terms, and each cell holds the frequency of a term in a document. With many words and few documents the matrix gets very sparse — watch out for the Curse of Dimensionality!\nA DFM is a crucial step in NLP: it transforms unstructured text into a structured format that statistical and machine learning techniques can work with. It holds a few key assumptions (“bag of words”):\n\nThe words in a document convey meaning.\nWord order does not matter.\nWord combinations do not matter (i.e. negation).\nGrammar does not matter.\nWords are the only relevant features (not punctuation, not syllables, etc).\n\n\n\n\nDocument-Feature Matrix\n\n\nMost words do not appear in every document, so the matrix easily gets sparse. We can trim the DFM to remove very rare and very frequent words. Counting raw term prevalence implicitly assumes all words are equally important, which is often not the case — so we apply tf-idf weighting. It reflects how important a word is to a document in a collection: importance increases with how often a word appears in the document, offset by how common the word is across the whole corpus.\n\\[TF = \\frac{\\text{count of term } t \\text{ in document}}{\\text{total terms in document}}\\]\n\\[TF\\text{-}IDF = TF \\times \\ln\\!\\left(\\frac{\\text{total documents}}{\\text{documents containing } t}\\right)\\]\nWorked example\n\nd1: “red car fast”\nd2: “blue car slow car”\n\nDFM (counts):\n    blue car fast red slow\nd1     0   1    1   1    0\nd2     1   2    0   0    1\nTerm Frequency (TF = count / doc length):\n\nd1: blue=0, car=0.333, fast=0.333, red=0.333, slow=0\nd2: blue=0.25, car=0.5, fast=0, red=0, slow=0.25\n\nDocument Frequency (DF, N = 2 docs): blue=1, car=2, fast=1, red=1, slow=1\nInverse Document Frequency (IDF = ln(N/df)): blue=0.693, car=0, fast=0.693, red=0.693, slow=0.693\nTF-IDF (tf × idf):\n     blue   car  fast    red  slow\nd1   0.000  0.000  0.231  0.231  0.000\nd2   0.173  0.000  0.000  0.000  0.173\n\nOptional Task: calculate a small DFM by hand\n\nd1: “The quick brown fox”\nd2: “The lazy dog”\n\nDFM (counts):\n    the quick brown fox lazy dog\nd1    1     1     1   1    0   0\nd2    1     0     0   0    1   1\nTF (d1 has 4 tokens, d2 has 3 tokens):\n    the  quick brown  fox lazy  dog\nd1  0.25 0.25  0.25  0.25 0.00 0.00\nd2  0.33 0.00  0.00  0.00 0.33 0.33\nDF: the=2, quick=1, brown=1, fox=1, lazy=1, dog=1. IDF = ln(2/df): the=0.000, quick=0.693, brown=0.693, fox=0.693, lazy=0.693, dog=0.693.\nTF-IDF:\n    the    quick  brown   fox   lazy   dog\nd1  0.000  0.173  0.173  0.173  0.000  0.000\nd2  0.000  0.000  0.000  0.000  0.231  0.231\n\n\nCalculating the DFM with quanteda\nWe take our tokens object and call dfm() on it. We usually want to trim the DFM (removing very rare and very frequent words), then apply tf-idf weighting to reduce sparsity. min_termfreq = 0.8 with termfreq_type = \"quantile\" keeps only the top 20% most frequent terms across the corpus (the bottom 80% of rare words get cut).\n\n# Create a document-feature matrix (DFM)\ndfm &lt;- dfm(tokens) %&gt;%\n  dfm_trim(min_termfreq = 0.8, termfreq_type = \"quantile\")\n\n# tf-idf weighting\ndfm_tfidf_mat &lt;- dfm_tfidf(dfm)\n\n\n\nTask\n\nBuild a corpus for female and male award winners separately.\nPreprocess the text (tokenization, lowercasing, removing punctuation and special characters, removing stop words, stemming/lemmatization).\nLook at what preprocessing options quanteda offers.\nCreate a DFM for both corpora.\n\n\n\nShow solution\nclean_text_female &lt;- clean_text_data %&gt;% filter(gender == \"female\")\nclean_text_male   &lt;- clean_text_data %&gt;% filter(gender == \"male\")\n\ncorpus_female &lt;- corpus(clean_text_female, text_field = \"extract\", docnames = \"pageid\")\ncorpus_male   &lt;- corpus(clean_text_male, text_field = \"extract\", docnames = \"pageid\")\n\ntokens_female &lt;- corpus_female %&gt;%\n  tokens(remove_punct = TRUE, remove_symbols = TRUE) %&gt;%\n  tokens_remove(stopwords(\"en\"), padding = FALSE) %&gt;%\n  tokens_tolower() %&gt;%\n  tokens_wordstem()\n\ntokens_male &lt;- corpus_male %&gt;%\n  tokens(remove_punct = TRUE, remove_symbols = TRUE) %&gt;%\n  tokens_remove(stopwords(\"en\"), padding = FALSE) %&gt;%\n  tokens_tolower() %&gt;%\n  tokens_wordstem()\n\ndfm_female &lt;- dfm(tokens_female)\ndfm_male   &lt;- dfm(tokens_male)",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -440,7 +253,7 @@
     "section": "Descriptive Analysis",
     "text": "Descriptive Analysis\n\nlibrary(quanteda.textplots)\nlibrary(quanteda.textstats)\n\nset.seed(132)\ntextplot_wordcloud(dfm_female, max_words = 100)\n\n\nset.seed(132)\ntextplot_wordcloud(dfm_male, max_words = 100)\n\n\nlibrary(ggplot2)\n\ndfm_female %&gt;%\n  textstat_frequency(n = 15) %&gt;%\n  ggplot(aes(x = reorder(feature, frequency), y = frequency)) +\n  geom_point() +\n  coord_flip() +\n  labs(x = NULL, y = \"Frequency\") +\n  theme_minimal()\n\ndfm_male %&gt;%\n  textstat_frequency(n = 15) %&gt;%\n  ggplot(aes(x = reorder(feature, frequency), y = frequency)) +\n  geom_point() +\n  coord_flip() +\n  labs(x = NULL, y = \"Frequency\") +\n  theme_minimal()",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -451,7 +264,7 @@
     "section": "Text Analysis Workflow for Bag-of-Words Models",
     "text": "Text Analysis Workflow for Bag-of-Words Models\nThe general workflow typically involves:\n\nData collection — gather text data from websites, social media, or documents.\nText parsing — break text into tokens, stem words, remove stop words.\nText filtering — weight your terms.\nText modeling — apply statistical or machine learning models (topic modeling, sentiment analysis, classification).\n\n\n\n\nText Analysis Workflow\n\n\nThere are no general rules for preprocessing decisions — it always depends on your data and research question. Try out different preprocessing steps and see how they affect your results.",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 1 (full day)"
     ]
   },
@@ -520,7 +333,7 @@
     "href": "index.html#what-well-cover",
     "title": "Introduction to NLP",
     "section": "What we’ll cover",
-    "text": "What we’ll cover\n\nDay 1 (full day) — Web scraping, working with the Wikipedia API, text preprocessing, tokenization, and the document-feature matrix (DFM).\nDay 2 (half day) — Dictionaries and Naive Bayes classification, word embeddings, and an introduction to large language models (LLMs) and transformer models.\n\nSee the Schedule for the day-by-day breakdown, or jump straight to the Slides or Notes.",
+    "text": "What we’ll cover\n\nDay 1 (full day) — Web scraping, working with the Wikipedia API, text preprocessing, tokenization, and the document-feature matrix (DFM).\nDay 2 (half day) — Dictionaries and Naive Bayes classification, word embeddings, and an introduction to large language models (LLMs) and transformer models.\n\nSee the Schedule for the day-by-day breakdown, or jump straight to the Day 1 notes.",
     "crumbs": [
       "Home"
     ]
@@ -540,9 +353,9 @@
     "href": "notes/day2.html",
     "title": "Day 2 Notes (Half Day)",
     "section": "",
-    "text": "This page picks up where Day 1 left off (clean_text_data, etc.) — datasets can be downloaded from the Data Preparation section there.\nIn supervised learning we have labeled data — we want to learn a model that predicts a target feature. For example, given a biography summary, predict whether it’s of a female or male award winner: the gender column is our target feature, and the text is our predictor.\nTo build a model that generalizes well, we split data into training and test sets. The training set trains the model; the test set checks how well it does on unseen data. One pitfall: with an imbalanced data set, make sure the target feature’s distribution is similar across both sets (see Model evaluation below).\n\nlibrary(arrow)\nlibrary(quanteda)\nlibrary(quanteda.textmodels)\n\nclean_text_data &lt;- read_parquet(\"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet\")\n\nclean_text_data &lt;- clean_text_data %&gt;%\n  filter(pageid != 7152417)\n\nset.seed(123)\nclean_text_data$train &lt;- sample(x = c(TRUE, FALSE),\n                                 size = nrow(clean_text_data),\n                                 replace = TRUE,\n                                 prob = c(.8, .2))\n\ncorpus &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\n\ndfm &lt;- corpus %&gt;%\n  tokens() %&gt;%\n  dfm() %&gt;%\n  dfm_remove(stopwords(\"en\"))\n\ndfm_train &lt;- dfm_subset(dfm, train)\ndfm_test  &lt;- dfm_subset(dfm, !train)\n\ndim(dfm_train)  # 808 documents, 8239 tokens\ndim(dfm_test)   # 200 documents, 8239 tokens",
+    "text": "This page picks up where Day 1 left off (clean_text_data, etc.) — datasets can be downloaded from the Data Preparation section there.",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 2 (half day)"
     ]
   },
@@ -550,10 +363,10 @@
     "objectID": "notes/day2.html#supervised-learning",
     "href": "notes/day2.html#supervised-learning",
     "title": "Day 2 Notes (Half Day)",
-    "section": "",
-    "text": "This page picks up where Day 1 left off (clean_text_data, etc.) — datasets can be downloaded from the Data Preparation section there.\nIn supervised learning we have labeled data — we want to learn a model that predicts a target feature. For example, given a biography summary, predict whether it’s of a female or male award winner: the gender column is our target feature, and the text is our predictor.\nTo build a model that generalizes well, we split data into training and test sets. The training set trains the model; the test set checks how well it does on unseen data. One pitfall: with an imbalanced data set, make sure the target feature’s distribution is similar across both sets (see Model evaluation below).\n\nlibrary(arrow)\nlibrary(quanteda)\nlibrary(quanteda.textmodels)\n\nclean_text_data &lt;- read_parquet(\"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet\")\n\nclean_text_data &lt;- clean_text_data %&gt;%\n  filter(pageid != 7152417)\n\nset.seed(123)\nclean_text_data$train &lt;- sample(x = c(TRUE, FALSE),\n                                 size = nrow(clean_text_data),\n                                 replace = TRUE,\n                                 prob = c(.8, .2))\n\ncorpus &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\n\ndfm &lt;- corpus %&gt;%\n  tokens() %&gt;%\n  dfm() %&gt;%\n  dfm_remove(stopwords(\"en\"))\n\ndfm_train &lt;- dfm_subset(dfm, train)\ndfm_test  &lt;- dfm_subset(dfm, !train)\n\ndim(dfm_train)  # 808 documents, 8239 tokens\ndim(dfm_test)   # 200 documents, 8239 tokens",
+    "section": "Supervised Learning",
+    "text": "Supervised Learning\nIn supervised learning we’ve labeled data. Thus, we want to learn a model that is able to predict our target feature. For example, we have our biography summaries and we want to learn a model that is able to predict whether the summary is indicating whether the summary is of female or male award winner. Our gender column is our target feature. Our text is our predictor, since we would like to infer the gender of the winner based on the words in the text.\nTo build a model that generalizes well we need to split our data in training and test data. The training data is used to train our model and our test data is used to test how well our model is doing when predicting unseen data. There are several pitfalls when splitting the data. For example, if we have a very imbalanced data set, we need to make sure that the distribution of the target feature is similar in both data sets. However, we will explore that in the coming section on model evaluation.\n\nlibrary(arrow)\nlibrary(quanteda)\nlibrary(quanteda.textmodels)\n\n# Import data\nclean_text_data &lt;- read_parquet(\"../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet\")\n\n# Drop missings\nclean_text_data &lt;- clean_text_data %&gt;%\n  filter(pageid != 7152417)\n\n# Create training and test set\nset.seed(123)\n\nclean_text_data$train &lt;- sample(x = c(TRUE, FALSE),\n                            size = nrow(clean_text_data),\n                            replace = TRUE,\n                            prob = c(.8, .2))\n\n# we first create a corpus\ncorpus &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\n\n# Convert to a DFM\ndfm &lt;- corpus %&gt;%\n  tokens() %&gt;%\n  dfm() %&gt;%\n  dfm_remove(stopwords(\"en\"))\n\n# Subset to training set observations\ndfm_train &lt;- dfm_subset(dfm, train)\n\n# Subset to test set observations\ndfm_test &lt;- dfm_subset(dfm, !train)\n\n# Check dimensions\ndim(dfm_train) # 808 documents and 8239 tokens\ndim(dfm_test) # 200 documents and 8239",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 2 (half day)"
     ]
   },
@@ -562,9 +375,9 @@
     "href": "notes/day2.html#dictionaries",
     "title": "Day 2 Notes (Half Day)",
     "section": "Dictionaries",
-    "text": "Dictionaries\nDictionaries are a classic tool in text analysis: a predefined list of words associated with specific categories or sentiments. Each dictionary word is assigned to one or more categories, allowing classification of text based on the presence of these words.\n\nset.seed(123)\n\nclean_text_data$train &lt;- sample(c(TRUE, FALSE),\n                                 size = nrow(clean_text_data),\n                                 replace = TRUE,\n                                 prob = c(.8, .2))\n\ncorp &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\ntoks &lt;- tokens(corp, remove_punct = TRUE) %&gt;% tokens_tolower()\ndfm_all &lt;- dfm(toks)\n\n# which words could we add?\ndict_gender &lt;- dictionary(list(\n  female = c(\"she\", \"her\", \"hers\", \"herself\"),\n  male   = c(\"he\", \"him\", \"his\", \"himself\")\n))\n\ndfm_pron_all   &lt;- dfm_lookup(dfm_all, dict_gender)\ndfm_pron_train &lt;- dfm_subset(dfm_pron_all, train)\ndfm_pron_test  &lt;- dfm_subset(dfm_pron_all, !train)\n\npred_test &lt;- ifelse(dfm_pron_test[, \"female\"] &gt;  dfm_pron_test[, \"male\"], \"female\",\n              ifelse(dfm_pron_test[, \"female\"] &lt;  dfm_pron_test[, \"male\"], \"male\", NA))\npred_test &lt;- factor(pred_test, levels = c(\"female\", \"male\"))\n\ny_test &lt;- factor(docvars(dfm_pron_test, \"gender\"), levels = levels(pred_test))\n\ncaret::confusionMatrix(pred_test, y_test)\n\n\nNaive Bayes Classification\nNaive Bayes (NB) is a simple yet effective probabilistic classifier based on Bayes’ Theorem. It predicts the most likely class by comparing the probabilities of each class given the observed features. The “naive” assumption is that features are conditionally independent given the class, which simplifies computation. NB is widely used in high-dimensional tasks like text classification.\nIn plain terms: given some conditions, it answers “which outcome is most probable?” For example, given that the weather is rainy and the temperature is 6°C, Naive Bayes can estimate the probability someone will (or won’t) play golf, and classify accordingly.\n\ny &lt;- factor(docvars(dfm_train, \"gender\"))\nnb_train &lt;- textmodel_nb(x = dfm_train, y = y, prior = \"docfreq\")\n\nclass_test &lt;- predict(nb_train, newdata = dfm_test, type = \"class\")\ndocvars(dfm_test, \"pred_nb\") &lt;- class_test\n\nconfusion_test &lt;- table(\n  predicted = docvars(dfm_test, \"pred_nb\"),\n  truth     = docvars(dfm_test, \"gender\")\n)\nconfusion_test\n\nThe model mostly predicts “male” when the winner actually was male — unsurprising, since male award winners are highly over-represented in the data. Predicting “male” is always a good guess when the target is this skewed — a class imbalance, a well-known ML problem. There are several techniques to tackle it, such as upsampling the minority class.\n\n\nModel evaluation\nA model can make two kinds of mistakes: falsely classifying instances as female when they were male (false positives), and classifying instances as male when they were actually female (false negatives). We have several indicators to assess model performance:\n\\[Accuracy = \\frac{\\text{Correctly Classified}}{\\text{Total Classifications}}\\]\n\\[Precision = \\frac{\\text{True Positives}}{\\text{False Positives} + \\text{True Positives}}\\]\n\\[Recall = \\frac{\\text{True Positives}}{\\text{False Negatives} + \\text{True Positives}}\\]\nRecall is also called Sensitivity or the True Positive Rate.\n\\[F_1 = 2 \\times \\frac{Precision \\times Recall}{Precision + Recall}\\]\n\n\nTask\n\nWhy do we have so many different measurements? Why are we interested in the rates of true positives and true negatives separately?\n\n\nlibrary(caret)\nconfusion_test_statistics &lt;- confusionMatrix(confusion_test, positive = \"female\")\nconfusion_test_statistics\n\n\nWhy is our true negative rate zero?\n\n\n\nTask\n\nCan we build a predictor for STEM vs. non-STEM prizes?\n\n\nclean_text_data$stem &lt;- ifelse(\n  clean_text_data$category %in% c(\"Chemistry\", \"Physiologyor Medicine\", \"Medicine\", \"Physics\"),\n  \"STEM\", \"non-STEM\"\n)\n\ncorp &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\ntoks &lt;- tokens(corp, remove_punct = TRUE) %&gt;% tokens_tolower()\ndfm_all &lt;- dfm(toks)\n\ndfm_train &lt;- dfm_subset(dfm_all, train)\ndfm_test  &lt;- dfm_subset(dfm_all, !train)\n\ny &lt;- factor(docvars(dfm_train, \"stem\"))\nnb_train &lt;- textmodel_nb(x = dfm_train, y = y, prior = \"docfreq\")\n\nclass_test &lt;- predict(nb_train, newdata = dfm_test, type = \"class\")\ndocvars(dfm_test, \"pred_nb\") &lt;- class_test\n\nconfusion_test &lt;- table(\n  predicted = docvars(dfm_test, \"pred_nb\"),\n  truth     = docvars(dfm_test, \"stem\")\n)\nconfusion_test\n\nconfusion_test_statistics &lt;- confusionMatrix(confusion_test, positive = \"STEM\")\nconfusion_test_statistics",
+    "text": "Dictionaries\nDictionaries have frequently been used in text analysis. A dictionary is a predefined list of words that are associated with specific categories or sentiments. Each word in the dictionary is assigned to one or more categories, allowing for the classification of text based on the presence of these words.\n\nset.seed(123)\n\nclean_text_data$train &lt;- sample(c(TRUE, FALSE),\n                                size = nrow(clean_text_data),\n                                replace = TRUE,\n                                prob = c(.8, .2))\n\ncorp &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\n\ntoks &lt;- tokens(corp, remove_punct = TRUE) %&gt;%\n  tokens_tolower()\n\ndfm_all &lt;- dfm(toks)\n\n# which words could we add?\ndict_gender &lt;- dictionary(list(\n  female = c(\"she\",\"her\",\"hers\",\"herself\"),\n  male   = c(\"he\",\"him\",\"his\",\"himself\")\n))\n\ndfm_pron_all  &lt;- dfm_lookup(dfm_all, dict_gender)\ndfm_pron_train &lt;- dfm_subset(dfm_pron_all, train)\ndfm_pron_test  &lt;- dfm_subset(dfm_pron_all, !train)\n\npred_test &lt;- ifelse(dfm_pron_test[, \"female\"] &gt;  dfm_pron_test[, \"male\"], \"female\",\n              ifelse(dfm_pron_test[, \"female\"] &lt;  dfm_pron_test[, \"male\"], \"male\", NA))\npred_test &lt;- factor(pred_test, levels = c(\"female\",\"male\"))\n\ny_test &lt;- factor(docvars(dfm_pron_test, \"gender\"), levels = levels(pred_test))\n\ncaret::confusionMatrix(pred_test, y_test)\n\n\nNaive Bayes Classification\nNaive Bayes (NB) is a simple yet effective probabilistic classifier based on Bayes’ Theorem. It predicts the most likely class of data by comparing the probabilities of each class given the observed features. The “naive” assumption is that all features are conditionally independent given the class, which simplifies computation. Naive Bayes is widely used in high-dimensional tasks such as text classification.\nIn plain terms: given some conditions, it answers “which outcome is most probable?” For example, given that the weather is rainy and the temperature is 6 degrees, Naive Bayes can estimate the probability that someone will (or will not) play golf, and classify accordingly.\n\ny &lt;- factor(docvars(dfm_train, \"gender\"))\nnb_train &lt;- textmodel_nb(x = dfm_train, y = y, prior = \"docfreq\")\n\nclass_test &lt;- predict(nb_train, newdata = dfm_test, type = \"class\")\ndocvars(dfm_test, \"pred_nb\")  &lt;- class_test\n\nconfusion_test &lt;- table(\n  predicted = docvars(dfm_test, \"pred_nb\"),\n  truth     = docvars(dfm_test, \"gender\")\n)\nconfusion_test\n\nWe can already see that in most cases the model predicted male when the winner was actually male. That makes sense since male award winners are highly over-represented in our data set. It’ll always be a good guess to just predict the label “male”. If the target feature is so highly skewed towards one category we’re talking about class imbalances. This is a known problem in Machine Learning. There are several techniques how to tackle class imbalances, such as upsampling the minority class.\n\n\nModel evaluation\nWhen the model makes the prediction it can make two mistakes: it can falsely classify instances as female, even though they were actually male (False Positives), and it can classify instances as male even though they were actually female (False Negatives). We have several indicators to assess the performance of our model (silly meme explains it quite well).\n\\[Accuracy = \\frac{\\text{Correctly Classified}}{\\text{Total Classifications}}\\]\n\\[Precision = \\frac{\\text{True Positives}}{\\text{False Positives} + \\text{True Positives}}\\]\n\\[Recall = \\frac{\\text{True Positives}}{\\text{False Negatives} + \\text{True Positives}}\\]\n\nAlso called Sensitivity or True Positive Rate.\n\n\\[F_1\\ Score = 2 \\times \\frac{Precision \\times Recall}{Precision + Recall}\\]\n\n\nTask\n\nAny idea why do we have so many different measurements? Why are we interested in the rate of true positives and true negatives separately?\n\n\nlibrary(caret)\nconfusion_test_statistics &lt;- confusionMatrix(confusion_test,\n                                              positive = \"female\")\n\nconfusion_test_statistics\n\n\nWhy is our true negative rate zero?\n\n\n\nTask\n\nCan we build a predictor for STEM vs. non-STEM prices?\n\n\n\nShow solution\nclean_text_data$stem &lt;- ifelse(clean_text_data$category %in% c(\"Chemistry\", \"Physiologyor Medicine\", \"Medicine\", \"Physics\"), \"STEM\", \"non-STEM\")\n\n\ncorp &lt;- corpus(clean_text_data, text_field = \"extract\", docnames = \"pageid\")\n\ntoks &lt;- tokens(corp, remove_punct = TRUE) %&gt;%\n  tokens_tolower()\n\ndfm_all &lt;- dfm(toks)\n\ndfm_train &lt;- dfm_subset(dfm_all, train)\ndfm_test  &lt;- dfm_subset(dfm_all, !train)\n\ny &lt;- factor(docvars(dfm_train, \"stem\"))\nnb_train &lt;- textmodel_nb(x = dfm_train, y = y, prior = \"docfreq\")\n\nclass_test &lt;- predict(nb_train, newdata = dfm_test, type = \"class\")\ndocvars(dfm_test, \"pred_nb\")  &lt;- class_test\n\nconfusion_test &lt;- table(\n  predicted = docvars(dfm_test, \"pred_nb\"),\n  truth     = docvars(dfm_test, \"stem\")\n)\nconfusion_test\n\nconfusion_test_statistics &lt;- confusionMatrix(confusion_test,\n                                              positive = \"STEM\")\n\nconfusion_test_statistics",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 2 (half day)"
     ]
   },
@@ -573,9 +386,9 @@
     "href": "notes/day2.html#word-embeddings",
     "title": "Day 2 Notes (Half Day)",
     "section": "Word Embeddings",
-    "text": "Word Embeddings\n“The meaning of words is defined by the company they keep” (Firth, 1957). We represent meaning using a vector for each word, constructed so that words similar in meaning are also close together in vector space. The goal is a dense vector per word, similar to the vectors of words that appear in similar contexts. These representations are called word embeddings, because we “embed” words into a low-dimensional space (low compared to the vocabulary size).\nWord embeddings are pre-trained on large corpora, e.g. Wikipedia. The most common approaches are Word2Vec, the GloVe project, and fastText — all require substantial computational power and data to train.\nWindows — if a word’s meaning is defined by the company it keeps, we can define a window size: how many words before and after the target word count as context.\nImagine a model tasked with predicting a masked word — “the ___ chased the ball”, “the ___ is a pet”. It starts by randomly guessing the embedding for the hidden word. During training the model sees the actual word, compares it to its own prediction, and updates its weights via gradient descent to do better next time. To reduce mistakes, it generates vectors that are closer together for words that frequently appear together in its n-dimensional space.\n\nGradient descent, in short: compute the slope of the loss with respect to each parameter, and move a tiny step downhill.\n\n\ndf &lt;- arrow::read_parquet(\"../data/wikipedia_nobel_biographies_summaries_clean.parquet\") %&gt;%\n  drop_na()\n\n\nlibrary(data.table)\n\n# path to your embeddings file\npath &lt;- \"path/to/your/glove_or_dolma_embeddings.txt\"\n\n# Read GloVe-style file (no header line, unlike fastText)\nemb &lt;- fread(path, header = FALSE, quote = \"\", encoding = \"UTF-8\")\n\n# Split into words + vectors\nwords &lt;- emb[[1]]\nglove &lt;- as.matrix(emb[, -1, with = FALSE])\nrownames(glove) &lt;- words\n\n# Example: look up vector for \"dog\"\nglove[\"dog\", ]\n\ndim(glove)  # e.g. 1,200,001 terms x 300 dimensions\n\n\nlibrary(text2vec)\n\nsimilarities &lt;- function(target_word, n) {\n  # Extract embedding of target word\n  target_vector &lt;- glove[which(rownames(glove) %in% target_word), ]\n\n  # Calculate cosine similarity between target word and other words\n  target_sim &lt;- sim2(glove, matrix(target_vector, nrow = 1))\n\n  # Report nearest neighbours of target word\n  names(sort(target_sim[, 1], decreasing = TRUE))[1:n]\n}\n\nsimilarities(\"woman\", n = 7)\nsimilarities(\"men\", n = 7)\n\n\nlibrary(text2vec)\nlibrary(quanteda)\n\n# Construct corpus\ncorp &lt;- corpus(df, text_field = \"extract\")\n\n# Create vocab list based on dfm\nvocab &lt;- featnames(\n  dfm(tokens(corp, remove_punct = TRUE) %&gt;%\n        tokens_tolower() %&gt;%\n        tokens_remove(stopwords(\"en\")))\n)\n\n# Create function that selects the nearest neighbors\nnearest_from_summaries &lt;- function(glove, query, top_n = 20, vocab = NULL) {\n  rn   &lt;- rownames(glove)\n  cand &lt;- if (is.null(vocab)) glove else glove[rn %in% vocab, , drop = FALSE]\n\n  # expand wildcards (case-insensitive) and collect matches\n  to_rx &lt;- function(q) paste0(\"^\", gsub(\"\\\\*\", \".*\", tolower(q)), \"$\")\n  matches &lt;- unique(unlist(lapply(query, function(q)\n    grep(to_rx(q), rn, ignore.case = TRUE, value = TRUE)\n  )))\n\n  q_vec &lt;- colMeans(glove[matches, , drop = FALSE])\n\n  sims &lt;- text2vec::sim2(cand, matrix(q_vec, nrow = 1),\n                          method = \"cosine\", norm = \"l2\")[, 1]\n\n  sims &lt;- sims[setdiff(names(sims), matches)]\n  sort(sims, decreasing = TRUE)[1:top_n]\n}\n\n\n# \"female concept\" neighbours (woman, women, female*)\nnn_female &lt;- nearest_from_summaries(glove,\n  query = c(\"woman*\", \"women\", \"female*\"),\n  top_n = 20, vocab = vocab\n)\n\n# \"male concept\" neighbours (man, men, male*)\nnn_male &lt;- nearest_from_summaries(glove,\n  query = c(\"man\", \"men\", \"male*\"),\n  top_n = 20, vocab = vocab\n)\n\nnn_female[1:20]\nnn_male[1:20]",
+    "text": "Word Embeddings\nThe meaning of words is defined by the company they keep (Firth, 1957). We represent meaning using a vector of each word. Vectors are constructed in a way that words that are similar in meaning are also similar in the vector space. Our goal is to build a dense vector for each word, chosen so that it is similar to vectors of words that appear in similar context and thus, have a similar meaning. These representations are known as word embeddings because we “embed” words into a low-dimensional space (low compared to the vocabulary size).\nWord Embeddings are pre-trained on large corpora, for instance on Wikipedia. The most common ones are Word2Vec, Glove Project and Fasttext. They require a lot of computational power and data to be trained.\nWindows: If we are saying that a meaning of a word is defined by the company they keep, we can define a window size. The window size defines how many words before and after the target word we want to consider as context.\nImagine the model is tasked with predicting a masked word. The query: “the ___ chased the ball,” “the ___ is a pet”. It starts with randomly guessing the embedding for the hidden words. In our training data we allow the model to see the actual word, so that it can compare its own predictions with the actual prediction. With every wrong prediction the model learns to update its weights/parameters (Gradient Descent), so that it hopefully makes a better prediction next time. To reduce the mistakes the model does it generates vectors that are closer together when they frequently appear together in its n-dimensional space.\nGradient descent says: compute the slope of the loss with respect to each parameter, and move a tiny step downhill.\n\ndf &lt;- arrow::read_parquet(\"../data/wikipedia_nobel_biographies_summaries_clean.parquet\")\n\ndf &lt;- df %&gt;%\n  drop_na()\n\n\nlibrary(data.table)\n\n# path to your embeddings file\npath &lt;- \"path/to/your/glove_or_dolma_embeddings.txt\"\n\n# Read Glove file (no header line, unlike fastText)\nemb &lt;- fread(path,header = FALSE,quote = \"\",encoding = \"UTF-8\")\n\n# Split into words + vectors\nwords   &lt;- emb[[1]]\nglove &lt;- as.matrix(emb[, -1, with = FALSE])\nrownames(glove) &lt;- words\n\n# Example: look up vector for \"dog\"\nglove[\"dog\", ]\n\n# dimensions\ndim(glove)\n\nThe Glove embeddings contain 1200001 terms and 300 dimensions (columns).\n\nlibrary(text2vec)\n\nsimilarities &lt;- function(target_word, n){\n\n  # Extract embedding of target word\n  target_vector &lt;- glove[which(rownames(glove) %in% target_word),]\n\n  # Calculate cosine similarity between target word and other words\n  target_sim &lt;- sim2(glove, matrix(target_vector, nrow = 1))\n\n  # Report nearest neighbours of target word\n  names(sort(target_sim[,1], decreasing = T))[1:n]\n\n}\n\nsimilarities(\"woman\", n = 7)\nsimilarities(\"men\", n = 7)\n\n\nlibrary(text2vec)\nlibrary(quanteda)\n\n# Construct corpus\ncorp &lt;- corpus(df, text_field = \"extract\")\n\n# Create vocab list based on dfm\nvocab &lt;- featnames(\n  dfm(tokens(corp, remove_punct = TRUE) %&gt;%\n      tokens_tolower() %&gt;%\n      tokens_remove(stopwords(\"en\"))))\n\n# Create function that selects the nearest neighbors\nnearest_from_summaries &lt;- function(glove, query, top_n = 20, vocab = NULL) {\n  rn   &lt;- rownames(glove)\n  cand &lt;- if (is.null(vocab)) glove else glove[rn %in% vocab, , drop = FALSE]\n\n  # expand wildcards (case-insensitive) and collect matches\n  to_rx &lt;- function(q) paste0(\"^\", gsub(\"\\\\*\", \".*\", tolower(q)), \"$\")\n  matches &lt;- unique(unlist(lapply(query, function(q)\n    grep(to_rx(q), rn, ignore.case = TRUE, value = TRUE)\n  )))\n\n  q_vec &lt;- colMeans(glove[matches, , drop = FALSE])\n\n  sims &lt;- text2vec::sim2(cand, matrix(q_vec, nrow = 1),\n                         method = \"cosine\", norm = \"l2\")[, 1]\n\n  sims &lt;- sims[setdiff(names(sims), matches)]\n  sort(sims, decreasing = TRUE)[1:top_n]\n}\n\n\n# 3) Examples\n# \"female concept\" neighbours (woman, women, female*)\nnn_female &lt;- nearest_from_summaries(glove,\n                                    query = c(\"woman*\", \"women\", \"female*\"),\n                                    top_n = 20, vocab = vocab)\n\n# \"male concept\" neighbours (man, men, male*)\nnn_male &lt;- nearest_from_summaries(glove,\n                                  query = c(\"man\", \"men\", \"male*\"),\n                                  top_n = 20, vocab = vocab)\n\nnn_female[1:20]\nnn_male[1:20]",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 2 (half day)"
     ]
   },
@@ -584,9 +397,9 @@
     "href": "notes/day2.html#visualization",
     "title": "Day 2 Notes (Half Day)",
     "section": "Visualization",
-    "text": "Visualization\nWe can also plot word embeddings, reducing their dimensions to two. The closer terms are to one another, the closer they are in meaning.\n\nlibrary(ggplot2)\n\nshow_map &lt;- function(words) {\n  M &lt;- glove[intersect(words, rownames(glove)), , drop = FALSE]\n  Z &lt;- prcomp(M, center = TRUE, scale. = FALSE)$x[, 1:2]\n\n  df &lt;- data.frame(Z, word = rownames(Z))\n  ggplot(df, aes(PC1, PC2, label = word)) +\n    geom_point() + ggrepel::geom_text_repel(size = 3)\n}\n\nshow_map(c(\"einstein\", \"curie\", \"planck\", \"nobel\", \"physicist\", \"chemist\",\n           \"literature\", \"ernaux\", \"peace\", \"literatur\", \"peac\", \"united\"))",
+    "text": "Visualization\nWe can also plot our word embeddings. Therefore we need to use reduce our dimensions to two. The closer the terms are to one another, the closer they are in their meaning.\n\nlibrary(ggplot2)\n\nshow_map &lt;- function(words){\n  M &lt;- glove[intersect(words, rownames(glove)), , drop=FALSE]\n  Z &lt;- prcomp(M, center=TRUE, scale.=FALSE)$x[,1:2]\n\n  df &lt;- data.frame(Z, word=rownames(Z))\n  ggplot(df, aes(PC1, PC2, label=word)) +\n    geom_point() + ggrepel::geom_text_repel(size=3)\n}\n\nshow_map(c(\"einstein\",\"curie\",\"planck\",\"nobel\",\"physicist\",\"chemist\", \"literature\", \"ernaux\", \"peace\", \"literatur\", \"peac\", \"united\"))",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 2 (half day)"
     ]
   },
@@ -595,20 +408,20 @@
     "href": "notes/day2.html#large-language-models-llms",
     "title": "Day 2 Notes (Half Day)",
     "section": "Large Language Models (LLMs)",
-    "text": "Large Language Models (LLMs)\n\nWhat are Large Language Models?\nLarge Language Models (LLMs) are advanced AI models designed to understand, generate, and manipulate human language. They’re built using deep learning, particularly neural networks, and trained on vast amounts of text data to learn language’s statistical patterns and structures. A useful distinction: foundation models are pre-trained on a large corpus and can be fine-tuned for specific tasks; LLMs are a subset of foundation models specifically designed for NLP tasks.\nFine-tuning — take a pre-trained model and specialize it for a downstream task, by training on a smaller, task-specific dataset while keeping the pre-trained weights as a starting point. This adapts the model to a task’s specific nuances without training from scratch.\nPrompting — instead of fine-tuning, provide specific prompts or instructions to guide the model’s behavior. More flexible and adaptable, without extensive retraining.\nTwo flavors of prompting:\n\nZero-shot learning — the model gets a task with no prior examples, relying solely on its pre-existing knowledge.\nFew-shot learning — the model gets a small number of examples or demonstrations to help it understand the task’s context and requirements.\n\nIt’s usually best to start with prompting, and only fine-tune if prompting doesn’t work well enough — fine-tuning has high computational and labor costs and needs large amounts of labeled data.\n\n\nWhy are LLMs so powerful?\nLLMs capture the complexities and nuances of human language, enabling a wide range of tasks with high accuracy: generating coherent, contextually relevant text, answering questions, translating, summarizing, and conversing. All LLMs are a form of transformer model. Transformers contain an attention mechanism that weighs the importance of different words in a sentence when making predictions — this captures long-range dependencies and context far more effectively than earlier models like RNNs or LSTMs, which is why LLMs are so transformational for the field.\nWhat are feedforward neural networks?\n\n\n\nFeedforward Neural Network Architecture\n\n\nA feedforward neural network is an artificial neural network where connections between nodes don’t form a cycle — information flows in one direction, from the input layer through one or more hidden layers to the output layer. Each node in a layer connects to every node in the next layer, and each connection has a weight determining the strength of that connection.\nSee also: StatQuest — Feedforward Neural Networks.\n\n\nTransformer Models\n\n\n\nTransformer Model\n\n\nA transformer model contains a stack of encoders and decoders. The encoder processes the input text through multiple layers of self-attention and feedforward networks to build a rich representation of the input. The decoder uses this representation to generate the output text, again through self-attention and feedforward layers. The attention mechanism lets the model focus on different parts of the input when generating each output word, capturing context and relationships effectively. Transformer models learn to understand language through next-word/sentence prediction and masking particular words.",
+    "text": "Large Language Models (LLMs)\n\nWhat are Large Language Models?\nLarge Language Models (LLMs) are advanced artificial intelligence models designed to understand, generate, and manipulate human language. They are built using deep learning techniques, particularly neural networks, and are trained on vast amounts of text data to learn the statistical patterns and structures of language. A useful distinction is between foundation models and LLMs. Foundation models are pre-trained on a large corpus of text data and can be fine-tuned for specific tasks. LLMs are a subset of foundation models that are specifically designed to handle natural language processing tasks.\nFinetuning: When we fine-tune a model we used a pre-trained model and specialize it for our downstream task. This is done by training the model on a smaller, task-specific dataset while keeping the pre-trained weights as a starting point. Fine-tuning allows the model to adapt to the specific nuances and requirements of the target task, improving its performance without needing to train a new model from scratch.\nPrompting: Instead of fine-tuning the entire model, users can provide specific prompts or instructions to guide the model’s behavior for a particular task. This approach allows for more flexibility and adaptability without the need for extensive retraining.\nThere are two possible versions of prompting: Zero Shot Learning and Few Shot Learning. In zero-shot learning, the model is given a task without any prior examples or training on that specific task. The model relies solely on its pre-existing knowledge and understanding of language to generate a response. In few-shot learning, the model is provided with a small number of examples or demonstrations of the task at hand. These examples help the model understand the context and requirements of the task, allowing it to generate more accurate and relevant responses.\nIt is always a good idea to start with prompting and only fine-tune the model if prompting does not work well enough, due to the high computational and labour costs and the need for large amounts of labeled data.\n\n\nWhy are LLMs so powerful?\nLLMs are powerful because they can capture the complexities and nuances of human language, enabling them to perform a wide range of tasks with high accuracy. They can generate coherent and contextually relevant text, answer questions, translate languages, summarize information, and even engage in conversations. Their ability to understand context and generate human-like responses makes them valuable tools for various applications, including chatbots, virtual assistants, content creation, and more. All LLMs are a form of a transformer model. Transformer model contain an attention mechanism that allows them to weigh the importance of different words in a sentence when making predictions. This enables them to capture long-range dependencies and context more effectively than previous models like RNNs or LSTMs, which is the reason why LLM’s are so powerful and transformational within the field.\nWhat are feedforward neural networks?\n\n\n\nNeural Network Architecture\n\n\nA feedforward neural network is a type of artificial neural network where the connections between the nodes do not form a cycle. In this architecture, information flows in one direction, from the input layer through one or more hidden layers to the output layer. Each node (or neuron) in a layer is connected to every node in the subsequent layer, and each connection has an associated weight that determines the strength of the connection.\nStatquest for Feedforward Neural Network\n\n\nTransformer Models\nHow does a transformer model work?\n\n\n\nTransformer Model\n\n\nA transformer model contains a stack of encoders and decoders. The encoder takes the input text and processes it through multiple layers of self-attention and feedforward neural networks to create a rich representation of the input. The decoder then uses this representation to generate the output text, also through multiple layers of self-attention and feedforward networks. The attention mechanism allows the model to focus on different parts of the input when generating each word in the output, enabling it to capture context and relationships effectively. The models learned to understand language by next word/sentence prediction and masking particular words.",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 2 (half day)"
     ]
   },
   {
-    "objectID": "notes/day2.html#running-local-llms-with-ollama",
-    "href": "notes/day2.html#running-local-llms-with-ollama",
+    "objectID": "notes/day2.html#what-is-ollama",
+    "href": "notes/day2.html#what-is-ollama",
     "title": "Day 2 Notes (Half Day)",
-    "section": "Running Local LLMs with Ollama",
-    "text": "Running Local LLMs with Ollama\nLlama is an LLM developed by Meta and, unlike many competitors, is open source. It’s not as large as GPT-3 or GPT-4, but still powerful and usable for a variety of tasks. Ollama is a platform for running and managing LLMs on your local machine, with an easy-to-use interface for developers and researchers who want to leverage LLMs without extensive infrastructure or cloud services.\n\nlibrary(rollama)\n\n# available models you have installed locally\nlist_models()\n\n# pull_model(\"mistral:7B\")  # download a model\n\nping_ollama()  # check if the Ollama server is reachable\n\nSystem and user prompts are core components of prompt engineering. A system prompt gives the model foundational instructions — assigning a role (“You are a research assistant”) and constraints (ethical guidelines, style, behavior). System prompts are typically consistent across sessions. A user prompt contains task-specific instructions (“Classify these sentences into categories”), possibly with extra context or examples.\nWe’ll try zero-shot learning first: get some text, construct the prompt, and send it to the model.\n\n# We can simply talk to the model\nrollama::query(\"What is the capital of New York\", model = \"llama3.1\")\n\n# Construct the query: a system message assigns a role, then the\n# user prompt supplies the task-specific text.\ndf$zero &lt;- NA_character_\n\nfor (i in 1:2) {\n  question &lt;- \"Task: You're a research assistant that helps to analyze texts. Your aim is to classify whether the summary of a biography describes a female or a male Nobel prize winner.\"\n  text &lt;- df$extract[i]\n  question &lt;- paste(question, text)\n  result &lt;- query(question, model = \"llama3.1\")\n  print(result)\n  df$zero[i] &lt;- result[[1]]$message$content\n}\n\n\n\n\n\n\n\nTip\n\n\n\nThat’s a lot of ground for half a day. If you’re tight on time in the room, the first candidates to trim are the word embeddings code walkthrough (keep the concept, skip live-coding the GloVe lookup) and the Ollama zero-shot loop (demo it live once rather than having everyone run it).",
+    "section": "What is Ollama?",
+    "text": "What is Ollama?\nLlama is a LLM developed by meta and is in comparison to many other competitors an open source model. It is not as large as GPT-3 or GPT-4, but it is still a powerful model that can be used for a variety of tasks. Ollama is a platform that allows you to run and manage large language models (LLMs) on your local machine. It provides an easy-to-use interface for interacting with these models, making it accessible for developers and researchers who want to leverage the power of LLMs without needing extensive infrastructure or cloud services.\n\nlibrary(rollama)\n\n# available models you have installed locally\nlist_models()\n\n# Example usage\n# pull_model(\"mistral:7B\") # download a model\n\nping_ollama() # let's check if it is there\n\nSystem and user prompts are core components of prompt engineering. A system prompt provides foundational instructions to the model, such as assigning a role (“You are a research assistant” or “You are an expert in X”) and specifying constraints (e.g., ethical guidelines, style, or behavior). System prompts are typically consistent across many users or sessions. In contrast, a user prompt contains task-specific instructions, such as “Classify these sentences into categories,” and may include additional context or examples to help the model perform the task effectively.\nWe’ll try out zero shot learning first: We first need a some text. Then we construct the prompt and send it to the model.\n\n# We can simply talk to the model\nrollama::query(\"What is the capital of New York\", model = \"llama3.1\")\n\n# lets construct the query\n\n# Therefore we need a system message and a user prompt template.\n# A system message usually starts with a role we're assigning.\n\ndf$zero &lt;- NA_character_\n\nfor (i in 1:2) {\n  print(i)\n  question &lt;- \"Task: You're a research assistant that helps to analyze texts. Your aim is to classify whether the summary of a biographie describes a female or a male nobel price winner.\"\n  text &lt;- df$extract[i]\n  question &lt;- paste(question, text)\n  result &lt;- query(question, model =\"llama3.1\")\n  print(result)\n  df$zero[i] &lt;- result[[1]]$message$content\n}",
     "crumbs": [
-      "Notes",
+      "Course Content",
       "Day 2 (half day)"
     ]
   },
@@ -617,7 +430,7 @@
     "href": "schedule.html",
     "title": "Schedule",
     "section": "",
-    "text": "What is Natural Language Processing (NLP)?\nWorking with Wikipedia: pages, categories, revisions\nWeb scraping: HTML tables, the Wikipedia API, and R wrappers (WikipediR, wikkitidy)\nData preparation and cleaning\nText preprocessing: tokenization, stopwords, stemming\nThe document-feature matrix (DFM) and tf-idf weighting\nDescriptive analysis (word clouds, frequency plots)\n\nSlides · Notes",
+    "text": "What is Natural Language Processing (NLP)?\nWorking with Wikipedia: pages, categories, revisions\nWeb scraping: HTML tables, the Wikipedia API, and R wrappers (WikipediR, wikkitidy)\nData preparation and cleaning\nText preprocessing: tokenization, stopwords, stemming\nThe document-feature matrix (DFM) and tf-idf weighting\nDescriptive analysis (word clouds, frequency plots)\n\nNotes",
     "crumbs": [
       "Schedule"
     ]
@@ -627,7 +440,7 @@
     "href": "schedule.html#day-1-full-day-scraping-text-preprocessing",
     "title": "Schedule",
     "section": "",
-    "text": "What is Natural Language Processing (NLP)?\nWorking with Wikipedia: pages, categories, revisions\nWeb scraping: HTML tables, the Wikipedia API, and R wrappers (WikipediR, wikkitidy)\nData preparation and cleaning\nText preprocessing: tokenization, stopwords, stemming\nThe document-feature matrix (DFM) and tf-idf weighting\nDescriptive analysis (word clouds, frequency plots)\n\nSlides · Notes",
+    "text": "What is Natural Language Processing (NLP)?\nWorking with Wikipedia: pages, categories, revisions\nWeb scraping: HTML tables, the Wikipedia API, and R wrappers (WikipediR, wikkitidy)\nData preparation and cleaning\nText preprocessing: tokenization, stopwords, stemming\nThe document-feature matrix (DFM) and tf-idf weighting\nDescriptive analysis (word clouds, frequency plots)\n\nNotes",
     "crumbs": [
       "Schedule"
     ]
@@ -637,163 +450,9 @@
     "href": "schedule.html#day-2-half-day-supervised-learning-word-embeddings-llms",
     "title": "Schedule",
     "section": "Day 2 (half day) — Supervised Learning, Word Embeddings & LLMs",
-    "text": "Day 2 (half day) — Supervised Learning, Word Embeddings & LLMs\n\nSupervised learning basics: train/test splits, class imbalance\nDictionaries and Naive Bayes classification\nModel evaluation (accuracy, precision, recall, F1)\nWord embeddings (GloVe) and nearest-neighbor search\nLarge language models (LLMs) and the transformer architecture\nRunning local LLMs with Ollama\n\nSlides · Notes",
+    "text": "Day 2 (half day) — Supervised Learning, Word Embeddings & LLMs\n\nSupervised learning basics: train/test splits, class imbalance\nDictionaries and Naive Bayes classification\nModel evaluation (accuracy, precision, recall, F1)\nWord embeddings (GloVe) and nearest-neighbor search\nLarge language models (LLMs) and the transformer architecture\nRunning local LLMs with Ollama\n\nNotes",
     "crumbs": [
       "Schedule"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#introduction",
-    "href": "slides/day1.html#introduction",
-    "title": "Day One",
-    "section": "Introduction",
-    "text": "Introduction\n\nIf you have any inquiries, questions, feedback, or just want a chat, please don’t hesitate to reach out.\nEmail: mara.weber@ucl.ac.uk\nCredit points: hand in a mini project (see Assignment)",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#what-is-natural-language-processing",
-    "href": "slides/day1.html#what-is-natural-language-processing",
-    "title": "Day One",
-    "section": "What is Natural Language Processing?",
-    "text": "What is Natural Language Processing?\n\nInterdisciplinary field between computer science and linguistics\nAims to quantitatively represent text so computers can “understand” it\nApplications across sociology, political science, industry\nGrowing digital trace data → NLP is now transformative for daily life",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#lets-talk-a-bit-about-wikipedia",
-    "href": "slides/day1.html#lets-talk-a-bit-about-wikipedia",
-    "title": "Day One",
-    "section": "Let’s talk a bit about Wikipedia",
-    "text": "Let’s talk a bit about Wikipedia\n\nFree encyclopedia, volunteer-edited, hosted by Wikimedia since 2001\nReflects — and shapes — our contemporary knowledge production\nWhat’s written on Wikipedia influences media, research, and real-life decisions\nEditors skew male; political & interest groups actively edit pages",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#static-vs.-dynamic-scraping",
-    "href": "slides/day1.html#static-vs.-dynamic-scraping",
-    "title": "Day One",
-    "section": "Static vs. dynamic scraping",
-    "text": "Static vs. dynamic scraping\n\nStatic: scrape the rendered HTML of a page (e.g. rvest)\nDynamic: query an API directly (usually more efficient — no HTML parsing needed)\n\n\nlibrary(pacman); pacman::p_load(\"rvest\", \"tidyverse\")\n\nurl &lt;- read_html(\"https://en.wikipedia.org/wiki/List_of_Nobel_laureates\")\nnobel_table &lt;- url %&gt;% html_node(\"table\") %&gt;% html_table()",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#the-wikipedia-api",
-    "href": "slides/day1.html#the-wikipedia-api",
-    "title": "Day One",
-    "section": "The Wikipedia API",
-    "text": "The Wikipedia API\n\nConnect to the API URL, e.g. en.wikipedia.org/w/api.php\nSend an HTTP GET request with parameters\nRetrieve a response, usually JSON\n\n\nlibrary(httr2)\n# request(baseurl) %&gt;%\n#   req_user_agent(...) %&gt;%\n#   req_url_query(!!!params) %&gt;%\n#   req_perform()",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#using-r-wrappers-wikipedir-wikkitidy",
-    "href": "slides/day1.html#using-r-wrappers-wikipedir-wikkitidy",
-    "title": "Day One",
-    "section": "Using R wrappers: WikipediR, wikkitidy",
-    "text": "Using R wrappers: WikipediR, wikkitidy\n\nWrappers hide the raw HTTP/JSON plumbing\nWikipediR::page_content() fetches page HTML in one call\nStill need XML::htmlParse() + readHTMLTable() to extract tables",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#task",
-    "href": "slides/day1.html#task",
-    "title": "Day One",
-    "section": "Task",
-    "text": "Task\n\nScrape biographies of female & male Nobel laureates (dynamic or static)\nUse the Wikipedia category structure: Category: Lists of Nobel laureates\nHint: pages_in_category() (WikipediR) + pivot/join against the scraped table for the male laureates",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#data-preparation",
-    "href": "slides/day1.html#data-preparation",
-    "title": "Day One",
-    "section": "Data preparation",
-    "text": "Data preparation\n\nProvided data set: pageid, title, extract, revision, gender\nOnly ~4.6% of Nobel prizes went to women — striking imbalance\nTask: import, drop NAs, rename/select columns, filter to female rows",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#text-preprocessing-tokenization",
-    "href": "slides/day1.html#text-preprocessing-tokenization",
-    "title": "Day One",
-    "section": "Text preprocessing: tokenization",
-    "text": "Text preprocessing: tokenization\n\nCorpus → documents → sentences → terms\nTokenization, lowercasing, removing punctuation/stopwords, stemming/lemmatization\nWe use quanteda\n\n\nText analysis workflow",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#the-document-feature-matrix-dfm",
-    "href": "slides/day1.html#the-document-feature-matrix-dfm",
-    "title": "Day One",
-    "section": "The Document-Feature Matrix (DFM)",
-    "text": "The Document-Feature Matrix (DFM)\n\nRows = documents, columns = terms, cells = frequency\nBag-of-words assumptions: word order & grammar don’t matter, only presence/frequency\nGets sparse fast → trim rare/frequent terms\n\n\nDFM example",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#tf-idf-weighting",
-    "href": "slides/day1.html#tf-idf-weighting",
-    "title": "Day One",
-    "section": "tf-idf weighting",
-    "text": "tf-idf weighting\n\\[TF\\text{-}IDF = TF \\times \\ln\\!\\left(\\frac{N}{\\text{docs containing } t}\\right)\\]\n\nRaw counts assume every word is equally important — usually false\ntf-idf up-weights words that are frequent in a document but rare across the corpus\ndfm_trim() + dfm_tfidf() in quanteda",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#task-hand-calculate-a-dfm",
-    "href": "slides/day1.html#task-hand-calculate-a-dfm",
-    "title": "Day One",
-    "section": "Task: hand-calculate a DFM",
-    "text": "Task: hand-calculate a DFM\n\nd1: “The quick brown fox” / d2: “The lazy dog”\nCompute counts → TF → DF → IDF → TF-IDF by hand\nThen verify with dfm() + dfm_tfidf() in quanteda",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#descriptive-analysis",
-    "href": "slides/day1.html#descriptive-analysis",
-    "title": "Day One",
-    "section": "Descriptive analysis",
-    "text": "Descriptive analysis\n\nWord clouds (quanteda.textplots::textplot_wordcloud())\nFrequency plots (quanteda.textstats::textstat_frequency())\nCompare female vs. male corpora — what differs?",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
-    ]
-  },
-  {
-    "objectID": "slides/day1.html#task-1",
-    "href": "slides/day1.html#task-1",
-    "title": "Day One",
-    "section": "Task",
-    "text": "Task\n\nBuild separate corpora for female/male winners\nPreprocess (tokenize, lowercase, strip punctuation/stopwords, stem)\nBuild a DFM for each and compare descriptive statistics",
-    "crumbs": [
-      "Slides",
-      "Day 1 (full day)"
     ]
   }
 ]
