@@ -3,9 +3,7 @@ title: "Assignment"
 subtitle: "Informatica Feminale Summer School (1 Credit Point)"
 ---
 
-It is possible to obtain a Credit Point by handing in a mini project.
-It is mandatory to schedule a meeting with the instructor beforehand.
-Choose one of the two options below.
+It is possible to obtain a Credit Point by handing in a mini project. I'm encouraging you to schedule a meeting with me before submitting any work, so we can get over your research question and discuss the feasibility of your project. Choose one of the two options below.
 
 ## Option 1: Scrape your own data
 

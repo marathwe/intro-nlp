@@ -51,7 +51,7 @@ scraping the award table on
 ```{r}
 #| label: static-scraping
 # Install and import packages
-# install.package("pacman")
+# install.packages("pacman")
 library(pacman)
 pacman::p_load("rvest", "tidyverse")
 
