@@ -13,10 +13,8 @@
 
 # ---- Supervised Learning: train/test split ---------------------------
 
-library(tidyverse)
-library(arrow)
-library(quanteda)
-library(quanteda.textmodels)
+pacman::p_load("tidyverse", "arrow", "quanteda", "quanteda.textmodels",
+               "caret", "data.table", "text2vec", "ggplot2", "ggrepel", "rollama")
 
 # Import data
 clean_text_data <- read_parquet("../data/wikipedia_nobel_biographies_summaries_clean_extended.parquet")
@@ -51,6 +49,61 @@ dfm_test <- dfm_subset(dfm, !train)
 # Check dimensions
 dim(dfm_train) # 808 documents and 8239 tokens
 dim(dfm_test) # 200 documents and 8239
+
+
+# ---- Naive Bayes Classification ---------------------------------------
+
+y <- factor(docvars(dfm_train, "gender"))
+nb_train <- textmodel_nb(x = dfm_train, y = y, prior = "docfreq")
+
+class_test <- predict(nb_train, newdata = dfm_test, type = "class")
+docvars(dfm_test, "pred_nb")  <- class_test
+
+confusion_test <- table(
+  predicted = docvars(dfm_test, "pred_nb"),
+  truth     = docvars(dfm_test, "gender")
+)
+confusion_test
+
+
+# ---- Model evaluation ---------------------------------------------------
+
+confusion_test_statistics <- confusionMatrix(confusion_test,
+                                              positive = "female")
+
+confusion_test_statistics
+
+# Task: Can we build a predictor for STEM vs. non-STEM prices?
+
+clean_text_data$stem <- ifelse(clean_text_data$category %in% c("Chemistry", "Physiologyor Medicine", "Medicine", "Physics"), "STEM", "non-STEM")
+
+
+corp <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
+
+toks <- tokens(corp, remove_punct = TRUE) %>%
+  tokens_tolower()
+
+dfm_all <- dfm(toks)
+
+dfm_train <- dfm_subset(dfm_all, train)
+dfm_test  <- dfm_subset(dfm_all, !train)
+
+y <- factor(docvars(dfm_train, "stem"))
+nb_train <- textmodel_nb(x = dfm_train, y = y, prior = "docfreq")
+
+class_test <- predict(nb_train, newdata = dfm_test, type = "class")
+docvars(dfm_test, "pred_nb")  <- class_test
+
+confusion_test <- table(
+  predicted = docvars(dfm_test, "pred_nb"),
+  truth     = docvars(dfm_test, "stem")
+)
+confusion_test
+
+confusion_test_statistics <- confusionMatrix(confusion_test,
+                                              positive = "STEM")
+
+confusion_test_statistics
 
 
 # ---- Dictionaries: Agency & Communion ---------------------------------
@@ -103,70 +156,12 @@ ac_by_doc %>%
 # summaries), which may be driving part of the gap.
 
 
-# ---- Naive Bayes Classification ---------------------------------------
-
-y <- factor(docvars(dfm_train, "gender"))
-nb_train <- textmodel_nb(x = dfm_train, y = y, prior = "docfreq")
-
-class_test <- predict(nb_train, newdata = dfm_test, type = "class")
-docvars(dfm_test, "pred_nb")  <- class_test
-
-confusion_test <- table(
-  predicted = docvars(dfm_test, "pred_nb"),
-  truth     = docvars(dfm_test, "gender")
-)
-confusion_test
-
-
-# ---- Model evaluation ---------------------------------------------------
-
-library(caret)
-confusion_test_statistics <- confusionMatrix(confusion_test,
-                                              positive = "female")
-
-confusion_test_statistics
-
-# Task: Can we build a predictor for STEM vs. non-STEM prices?
-
-clean_text_data$stem <- ifelse(clean_text_data$category %in% c("Chemistry", "Physiologyor Medicine", "Medicine", "Physics"), "STEM", "non-STEM")
-
-
-corp <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
-
-toks <- tokens(corp, remove_punct = TRUE) %>%
-  tokens_tolower()
-
-dfm_all <- dfm(toks)
-
-dfm_train <- dfm_subset(dfm_all, train)
-dfm_test  <- dfm_subset(dfm_all, !train)
-
-y <- factor(docvars(dfm_train, "stem"))
-nb_train <- textmodel_nb(x = dfm_train, y = y, prior = "docfreq")
-
-class_test <- predict(nb_train, newdata = dfm_test, type = "class")
-docvars(dfm_test, "pred_nb")  <- class_test
-
-confusion_test <- table(
-  predicted = docvars(dfm_test, "pred_nb"),
-  truth     = docvars(dfm_test, "stem")
-)
-confusion_test
-
-confusion_test_statistics <- confusionMatrix(confusion_test,
-                                              positive = "STEM")
-
-confusion_test_statistics
-
-
 # ---- Word Embeddings ----------------------------------------------------
 
 df <- arrow::read_parquet("/Users/maraweber/Documents/PGTA/summerschool/data/wikipedia_nobel_biographies_summaries_clean.parquet")
 
 df <- df %>%
   drop_na()
-
-library(data.table)
 
 # path to your embeddings file
 path <- "/Users/maraweber/Documents/PGTA/summerschool/data/dolma_300_2024_1.2M.100_combined.txt"
@@ -187,8 +182,6 @@ dim(glove)
 
 # The Glove embeddings contain 1200001 terms and 300 dimensions (columns).
 
-library(text2vec)
-
 similarities <- function(target_word, n){
 
   # Extract embedding of target word
@@ -204,9 +197,6 @@ similarities <- function(target_word, n){
 
 similarities("woman", n = 7)
 similarities("men", n = 7)
-
-library(text2vec)
-library(quanteda)
 
 # Construct corpus
 corp <- corpus(df, text_field = "extract")
@@ -254,8 +244,6 @@ nn_male[1:20]
 
 # ---- Visualization --------------------------------------------------------
 
-library(ggplot2)
-
 show_map <- function(words){
   M <- glove[intersect(words, rownames(glove)), , drop=FALSE]
   Z <- prcomp(M, center=TRUE, scale.=FALSE)$x[,1:2]
@@ -269,8 +257,10 @@ show_map(c("einstein","curie","planck","nobel","physicist","chemist", "literatur
 
 
 # ---- What is Ollama? ------------------------------------------------------
-
-library(rollama)
+#
+# Install Ollama itself first (the rollama package just talks to it):
+# Windows: https://ollama.com/download/windows
+# macOS/Linux: https://ollama.com/download
 
 # available models you have installed locally
 list_models()

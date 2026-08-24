@@ -70,82 +70,6 @@ dim(dfm_train) # 808 documents and 8239 tokens
 dim(dfm_test) # 200 documents and 8239
 ```
 
-## Dictionaries
-
-Dictionaries have frequently been used in text analysis. A dictionary
-is a predefined list of words that are associated with specific
-categories or sentiments. Each word in the dictionary is assigned to
-one or more categories, allowing for the classification of text based
-on the presence of these words.
-
-We use the **Agency** (194 words) and **Communion** (186 words)
-dictionaries from Pietraszkiewicz, Formanowicz, Gustafsson Sendén,
-Boyd, Sikström & Sczesny (2019), ["The Big Two Dictionaries: Capturing
-Agency and Communion in Natural
-Language"](https://doi.org/10.1002/ejsp.2561) (*European Journal of
-Social Psychology*), freely available on
-[OSF](https://osf.io/p7fzb/). Agency words capture achievement,
-independence, and competence (e.g. *achieve*, *confident*,
-*independent*); communion words capture warmth, relationships, and
-care (e.g. *caring*, *family*, *support*). Instead of predicting
-gender from the text, we use them descriptively — to measure whether
-female and male Nobel biographies differ in how agentic or communal
-their language is.
-
-[⬇ Download `agency_dictionary.txt`](../data/agency_dictionary.txt){.btn .btn-outline-primary role="button" download="agency_dictionary.txt"}
-[⬇ Download `communion_dictionary.txt`](../data/communion_dictionary.txt){.btn .btn-outline-primary role="button" download="communion_dictionary.txt"}
-
-```{r}
-#| label: dictionary-agency-communion
-corp <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
-
-toks <- tokens(corp, remove_punct = TRUE) %>%
-  tokens_tolower()
-
-dfm_all <- dfm(toks)
-
-# Agency & Communion dictionary (Pietraszkiewicz et al. 2019, https://osf.io/p7fzb/)
-agency_words <- readLines("../data/agency_dictionary.txt")
-communion_words <- readLines("../data/communion_dictionary.txt")
-
-dict_agency_communion <- dictionary(list(
-  agency    = agency_words,
-  communion = communion_words
-))
-
-dfm_ac <- dfm_lookup(dfm_all, dict_agency_communion)
-
-# rate = matched words / total words in the biography. We deliberately
-# don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary
-# dfm it normalizes agency and communion counts against each other
-# (their relative mix), not against document length — and a biography
-# with zero hits in both categories would silently score (0, 0) either
-# way, which distorts group means since hit rates differ by gender.
-ac_by_doc <- convert(dfm_ac, to = "data.frame") %>%
-  mutate(doc_len = ntoken(dfm_all)) %>%
-  bind_cols(gender = docvars(dfm_all, "gender")) %>%
-  mutate(agency_rate = agency / doc_len, communion_rate = communion / doc_len)
-
-# compare agentic vs. communal language rate by gender
-ac_by_doc %>%
-  group_by(gender) %>%
-  summarise(mean_agency = mean(agency_rate), mean_communion = mean(communion_rate), n = n())
-```
-
-**Interpretation:** female biographies score higher on *both*
-dimensions (≈2.0% of words are agency-coded, ≈2.0% communion-coded)
-than male biographies (≈1.4% agency, ≈1.8% communion) — so female
-bios use more trait-coded language overall, not specifically more
-agentic language relative to communal. Male biographies lean more
-communal than agentic among what coded language they do have. Two
-caveats before reading too much into this: (1) only 47 of the 1,047
-biographies are female, so the female estimate is noisy — check
-whether the difference holds up under a significance test (e.g. a
-t-test or bootstrap CI) before treating it as a real effect; (2) about
-23% of male biographies (vs. 11% of female ones) have zero matches in
-either dictionary at all, typically the shortest, most generic
-summaries — worth checking whether that's driving part of the gap.
-
 ### Naive Bayes Classification
 
 Naive Bayes (NB) is a simple yet effective probabilistic classifier
@@ -260,6 +184,82 @@ confusion_test_statistics <- confusionMatrix(confusion_test,
 
 confusion_test_statistics
 ```
+
+## Dictionaries
+
+Dictionaries have frequently been used in text analysis. A dictionary
+is a predefined list of words that are associated with specific
+categories or sentiments. Each word in the dictionary is assigned to
+one or more categories, allowing for the classification of text based
+on the presence of these words.
+
+We use the **Agency** (194 words) and **Communion** (186 words)
+dictionaries from Pietraszkiewicz, Formanowicz, Gustafsson Sendén,
+Boyd, Sikström & Sczesny (2019), ["The Big Two Dictionaries: Capturing
+Agency and Communion in Natural
+Language"](https://doi.org/10.1002/ejsp.2561) (*European Journal of
+Social Psychology*), freely available on
+[OSF](https://osf.io/p7fzb/). Agency words capture achievement,
+independence, and competence (e.g. *achieve*, *confident*,
+*independent*); communion words capture warmth, relationships, and
+care (e.g. *caring*, *family*, *support*). Instead of predicting
+gender from the text, we use them descriptively — to measure whether
+female and male Nobel biographies differ in how agentic or communal
+their language is.
+
+[⬇ Download `agency_dictionary.txt`](../data/agency_dictionary.txt){.btn .btn-outline-primary role="button" download="agency_dictionary.txt"}
+[⬇ Download `communion_dictionary.txt`](../data/communion_dictionary.txt){.btn .btn-outline-primary role="button" download="communion_dictionary.txt"}
+
+```{r}
+#| label: dictionary-agency-communion
+corp <- corpus(clean_text_data, text_field = "extract", docnames = "pageid")
+
+toks <- tokens(corp, remove_punct = TRUE) %>%
+  tokens_tolower()
+
+dfm_all <- dfm(toks)
+
+# Agency & Communion dictionary (Pietraszkiewicz et al. 2019, https://osf.io/p7fzb/)
+agency_words <- readLines("../data/agency_dictionary.txt")
+communion_words <- readLines("../data/communion_dictionary.txt")
+
+dict_agency_communion <- dictionary(list(
+  agency    = agency_words,
+  communion = communion_words
+))
+
+dfm_ac <- dfm_lookup(dfm_all, dict_agency_communion)
+
+# rate = matched words / total words in the biography. We deliberately
+# don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary
+# dfm it normalizes agency and communion counts against each other
+# (their relative mix), not against document length — and a biography
+# with zero hits in both categories would silently score (0, 0) either
+# way, which distorts group means since hit rates differ by gender.
+ac_by_doc <- convert(dfm_ac, to = "data.frame") %>%
+  mutate(doc_len = ntoken(dfm_all)) %>%
+  bind_cols(gender = docvars(dfm_all, "gender")) %>%
+  mutate(agency_rate = agency / doc_len, communion_rate = communion / doc_len)
+
+# compare agentic vs. communal language rate by gender
+ac_by_doc %>%
+  group_by(gender) %>%
+  summarise(mean_agency = mean(agency_rate), mean_communion = mean(communion_rate), n = n())
+```
+
+**Interpretation:** female biographies score higher on *both*
+dimensions (≈2.0% of words are agency-coded, ≈2.0% communion-coded)
+than male biographies (≈1.4% agency, ≈1.8% communion) — so female
+bios use more trait-coded language overall, not specifically more
+agentic language relative to communal. Male biographies lean more
+communal than agentic among what coded language they do have. Two
+caveats before reading too much into this: (1) only 47 of the 1,047
+biographies are female, so the female estimate is noisy — check
+whether the difference holds up under a significance test (e.g. a
+t-test or bootstrap CI) before treating it as a real effect; (2) about
+23% of male biographies (vs. 11% of female ones) have zero matches in
+either dictionary at all, typically the shortest, most generic
+summaries — worth checking whether that's driving part of the gap.
 
 ## Word Embeddings
 
@@ -511,6 +511,10 @@ provides an easy-to-use interface for interacting with these models,
 making it accessible for developers and researchers who want to
 leverage the power of LLMs without needing extensive infrastructure
 or cloud services.
+
+Before running the code below, install Ollama itself (the `rollama`
+package just talks to it): [download for Windows](https://ollama.com/download/windows)
+(macOS and Linux installers are on the same [download page](https://ollama.com/download)).
 
 ```{r}
 #| label: rollama-setup
