@@ -238,14 +238,14 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#supervised-learning" id="toc-supervised-learning" class="nav-link active" data-scroll-target="#supervised-learning">Supervised Learning</a></li>
-  <li><a href="#dictionaries" id="toc-dictionaries" class="nav-link" data-scroll-target="#dictionaries">Dictionaries</a>
+  <li><a href="#supervised-learning" id="toc-supervised-learning" class="nav-link active" data-scroll-target="#supervised-learning">Supervised Learning</a>
   <ul class="collapse">
   <li><a href="#naive-bayes-classification" id="toc-naive-bayes-classification" class="nav-link" data-scroll-target="#naive-bayes-classification">Naive Bayes Classification</a></li>
   <li><a href="#model-evaluation" id="toc-model-evaluation" class="nav-link" data-scroll-target="#model-evaluation">Model evaluation</a></li>
   <li><a href="#task" id="toc-task" class="nav-link" data-scroll-target="#task">Task</a></li>
   <li><a href="#task-1" id="toc-task-1" class="nav-link" data-scroll-target="#task-1">Task</a></li>
   </ul></li>
+  <li><a href="#dictionaries" id="toc-dictionaries" class="nav-link" data-scroll-target="#dictionaries">Dictionaries</a></li>
   <li><a href="#word-embeddings" id="toc-word-embeddings" class="nav-link" data-scroll-target="#word-embeddings">Word Embeddings</a></li>
   <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">Visualization</a></li>
   <li><a href="#large-language-models-llms" id="toc-large-language-models-llms" class="nav-link" data-scroll-target="#large-language-models-llms">Large Language Models (LLMs)</a>
@@ -326,64 +326,22 @@ window.Quarto = {
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dfm_train) <span class="co"># 808 documents and 8239 tokens</span></span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dfm_test) <span class="co"># 200 documents and 8239</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="dictionaries" class="level2">
-<h2 class="anchored" data-anchor-id="dictionaries">Dictionaries</h2>
-<p>Dictionaries have frequently been used in text analysis. A dictionary is a predefined list of words that are associated with specific categories or sentiments. Each word in the dictionary is assigned to one or more categories, allowing for the classification of text based on the presence of these words.</p>
-<p>We use the <strong>Agency</strong> (194 words) and <strong>Communion</strong> (186 words) dictionaries from Pietraszkiewicz, Formanowicz, Gustafsson Sendén, Boyd, Sikström &amp; Sczesny (2019), <a href="https://doi.org/10.1002/ejsp.2561">“The Big Two Dictionaries: Capturing Agency and Communion in Natural Language”</a> (<em>European Journal of Social Psychology</em>), freely available on <a href="https://osf.io/p7fzb/">OSF</a>. Agency words capture achievement, independence, and competence (e.g.&nbsp;<em>achieve</em>, <em>confident</em>, <em>independent</em>); communion words capture warmth, relationships, and care (e.g.&nbsp;<em>caring</em>, <em>family</em>, <em>support</em>). Instead of predicting gender from the text, we use them descriptively — to measure whether female and male Nobel biographies differ in how agentic or communal their language is.</p>
-<p><a href="../data/agency_dictionary.txt" class="btn btn-outline-primary" role="button" download="agency_dictionary.txt">⬇ Download <code>agency_dictionary.txt</code></a> <a href="../data/communion_dictionary.txt" class="btn btn-outline-primary" role="button" download="communion_dictionary.txt">⬇ Download <code>communion_dictionary.txt</code></a></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Agency &amp; Communion dictionary (Pietraszkiewicz et al. 2019, https://osf.io/p7fzb/)</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>agency_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/agency_dictionary.txt"</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>communion_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/communion_dictionary.txt"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>dict_agency_communion <span class="ot">&lt;-</span> <span class="fu">dictionary</span>(<span class="fu">list</span>(</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">agency    =</span> agency_words,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">communion =</span> communion_words</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>dfm_ac <span class="ot">&lt;-</span> <span class="fu">dfm_lookup</span>(dfm_all, dict_agency_communion)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># rate = matched words / total words in the biography. We deliberately</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># dfm it normalizes agency and communion counts against each other</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># (their relative mix), not against document length — and a biography</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># with zero hits in both categories would silently score (0, 0) either</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># way, which distorts group means since hit rates differ by gender.</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="ot">&lt;-</span> <span class="fu">convert</span>(dfm_ac, <span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">doc_len =</span> <span class="fu">ntoken</span>(dfm_all)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">gender =</span> <span class="fu">docvars</span>(dfm_all, <span class="st">"gender"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">agency_rate =</span> agency <span class="sc">/</span> doc_len, <span class="at">communion_rate =</span> communion <span class="sc">/</span> doc_len)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># compare agentic vs. communal language rate by gender</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="sc">%&gt;%</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gender) <span class="sc">%&gt;%</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_agency =</span> <span class="fu">mean</span>(agency_rate), <span class="at">mean_communion =</span> <span class="fu">mean</span>(communion_rate), <span class="at">n =</span> <span class="fu">n</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Interpretation:</strong> female biographies score higher on <em>both</em> dimensions (≈2.0% of words are agency-coded, ≈2.0% communion-coded) than male biographies (≈1.4% agency, ≈1.8% communion) — so female bios use more trait-coded language overall, not specifically more agentic language relative to communal. Male biographies lean more communal than agentic among what coded language they do have. Two caveats before reading too much into this: (1) only 47 of the 1,047 biographies are female, so the female estimate is noisy — check whether the difference holds up under a significance test (e.g.&nbsp;a t-test or bootstrap CI) before treating it as a real effect; (2) about 23% of male biographies (vs.&nbsp;11% of female ones) have zero matches in either dictionary at all, typically the shortest, most generic summaries — worth checking whether that’s driving part of the gap.</p>
 <section id="naive-bayes-classification" class="level3">
 <h3 class="anchored" data-anchor-id="naive-bayes-classification">Naive Bayes Classification</h3>
 <p>Naive Bayes (NB) is a simple yet effective probabilistic classifier based on Bayes’ Theorem. It predicts the most likely class of data by comparing the probabilities of each class given the observed features. The “naive” assumption is that all features are conditionally independent given the class, which simplifies computation. Naive Bayes is widely used in high-dimensional tasks such as text classification.</p>
 <p>In plain terms: given some conditions, it answers “which outcome is most probable?” For example, given that the weather is rainy and the temperature is 6 degrees, Naive Bayes can estimate the probability that someone will (or will not) play golf, and classify accordingly.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"gender"</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"gender"</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>confusion_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"gender"</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"gender"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>confusion_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We can already see that in most cases the model predicted male when the winner was actually male. That makes sense since male award winners are highly over-represented in our data set. It’ll always be a good guess to just predict the label “male”. If the target feature is so highly skewed towards one category we’re talking about class imbalances. This is a known problem in Machine Learning. There are several techniques how to tackle class imbalances, such as upsampling the minority class.</p>
 </section>
@@ -404,11 +362,11 @@ window.Quarto = {
 <li>Any idea why do we have so many different measurements? Why are we interested in the rate of true positives and true negatives separately?</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"female"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"female"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ul>
 <li>Why is our true negative rate zero?</li>
@@ -422,38 +380,80 @@ window.Quarto = {
 <div class="cell">
 <details class="code-fold">
 <summary>Show solution</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>clean_text_data<span class="sc">$</span>stem <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(clean_text_data<span class="sc">$</span>category <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Chemistry"</span>, <span class="st">"Physiologyor Medicine"</span>, <span class="st">"Medicine"</span>, <span class="st">"Physics"</span>), <span class="st">"STEM"</span>, <span class="st">"non-STEM"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>dfm_train <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, train)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>dfm_test  <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, <span class="sc">!</span>train)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"stem"</span>))</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"stem"</span>)</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>confusion_test</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"STEM"</span>)</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>clean_text_data<span class="sc">$</span>stem <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(clean_text_data<span class="sc">$</span>category <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Chemistry"</span>, <span class="st">"Physiologyor Medicine"</span>, <span class="st">"Medicine"</span>, <span class="st">"Physics"</span>), <span class="st">"STEM"</span>, <span class="st">"non-STEM"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>dfm_train <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, train)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>dfm_test  <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, <span class="sc">!</span>train)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"stem"</span>))</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"stem"</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>confusion_test</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"STEM"</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
+</section>
+<section id="dictionaries" class="level2">
+<h2 class="anchored" data-anchor-id="dictionaries">Dictionaries</h2>
+<p>Dictionaries have frequently been used in text analysis. A dictionary is a predefined list of words that are associated with specific categories or sentiments. Each word in the dictionary is assigned to one or more categories, allowing for the classification of text based on the presence of these words.</p>
+<p>We use the <strong>Agency</strong> (194 words) and <strong>Communion</strong> (186 words) dictionaries from Pietraszkiewicz, Formanowicz, Gustafsson Sendén, Boyd, Sikström &amp; Sczesny (2019), <a href="https://doi.org/10.1002/ejsp.2561">“The Big Two Dictionaries: Capturing Agency and Communion in Natural Language”</a> (<em>European Journal of Social Psychology</em>), freely available on <a href="https://osf.io/p7fzb/">OSF</a>. Agency words capture achievement, independence, and competence (e.g.&nbsp;<em>achieve</em>, <em>confident</em>, <em>independent</em>); communion words capture warmth, relationships, and care (e.g.&nbsp;<em>caring</em>, <em>family</em>, <em>support</em>). Instead of predicting gender from the text, we use them descriptively — to measure whether female and male Nobel biographies differ in how agentic or communal their language is.</p>
+<p><a href="../data/agency_dictionary.txt" class="btn btn-outline-primary" role="button" download="agency_dictionary.txt">⬇ Download <code>agency_dictionary.txt</code></a> <a href="../data/communion_dictionary.txt" class="btn btn-outline-primary" role="button" download="communion_dictionary.txt">⬇ Download <code>communion_dictionary.txt</code></a></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Agency &amp; Communion dictionary (Pietraszkiewicz et al. 2019, https://osf.io/p7fzb/)</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>agency_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/agency_dictionary.txt"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>communion_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/communion_dictionary.txt"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>dict_agency_communion <span class="ot">&lt;-</span> <span class="fu">dictionary</span>(<span class="fu">list</span>(</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">agency    =</span> agency_words,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">communion =</span> communion_words</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>dfm_ac <span class="ot">&lt;-</span> <span class="fu">dfm_lookup</span>(dfm_all, dict_agency_communion)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># rate = matched words / total words in the biography. We deliberately</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># dfm it normalizes agency and communion counts against each other</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># (their relative mix), not against document length — and a biography</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># with zero hits in both categories would silently score (0, 0) either</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># way, which distorts group means since hit rates differ by gender.</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="ot">&lt;-</span> <span class="fu">convert</span>(dfm_ac, <span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">doc_len =</span> <span class="fu">ntoken</span>(dfm_all)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">gender =</span> <span class="fu">docvars</span>(dfm_all, <span class="st">"gender"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">agency_rate =</span> agency <span class="sc">/</span> doc_len, <span class="at">communion_rate =</span> communion <span class="sc">/</span> doc_len)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co"># compare agentic vs. communal language rate by gender</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="sc">%&gt;%</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gender) <span class="sc">%&gt;%</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_agency =</span> <span class="fu">mean</span>(agency_rate), <span class="at">mean_communion =</span> <span class="fu">mean</span>(communion_rate), <span class="at">n =</span> <span class="fu">n</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Interpretation:</strong> female biographies score higher on <em>both</em> dimensions (≈2.0% of words are agency-coded, ≈2.0% communion-coded) than male biographies (≈1.4% agency, ≈1.8% communion) — so female bios use more trait-coded language overall, not specifically more agentic language relative to communal. Male biographies lean more communal than agentic among what coded language they do have. Two caveats before reading too much into this: (1) only 47 of the 1,047 biographies are female, so the female estimate is noisy — check whether the difference holds up under a significance test (e.g.&nbsp;a t-test or bootstrap CI) before treating it as a real effect; (2) about 23% of male biographies (vs.&nbsp;11% of female ones) have zero matches in either dictionary at all, typically the shortest, most generic summaries — worth checking whether that’s driving part of the gap.</p>
 </section>
 <section id="word-embeddings" class="level2">
 <h2 class="anchored" data-anchor-id="word-embeddings">Word Embeddings</h2>
@@ -610,6 +610,7 @@ window.Quarto = {
 <section id="what-is-ollama" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-ollama">What is Ollama?</h2>
 <p>Llama is a LLM developed by meta and is in comparison to many other competitors an open source model. It is not as large as GPT-3 or GPT-4, but it is still a powerful model that can be used for a variety of tasks. Ollama is a platform that allows you to run and manage large language models (LLMs) on your local machine. It provides an easy-to-use interface for interacting with these models, making it accessible for developers and researchers who want to leverage the power of LLMs without needing extensive infrastructure or cloud services.</p>
+<p>Before running the code below, install Ollama itself (the <code>rollama</code> package just talks to it): <a href="https://ollama.com/download/windows">download for Windows</a> (macOS and Linux installers are on the same <a href="https://ollama.com/download">download page</a>).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rollama)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1174,196 +1175,196 @@ window.Quarto = {
 <span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dfm_test) <span class="co"># 200 documents and 8239</span></span>
 <span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="fu">## Dictionaries</span></span>
+<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="fu">### Naive Bayes Classification</span></span>
 <span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a>Dictionaries have frequently been used in text analysis. A dictionary</span>
-<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a>is a predefined list of words that are associated with specific</span>
-<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a>categories or sentiments. Each word in the dictionary is assigned to</span>
-<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a>one or more categories, allowing for the classification of text based</span>
-<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a>on the presence of these words.</span>
-<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a>We use the **Agency** (194 words) and **Communion** (186 words)</span>
-<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a>dictionaries from Pietraszkiewicz, Formanowicz, Gustafsson Sendén,</span>
-<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a>Boyd, Sikström &amp; Sczesny (2019), ["The Big Two Dictionaries: Capturing</span>
-<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a>Agency and Communion in Natural</span>
-<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a>Language"](https://doi.org/10.1002/ejsp.2561) (*European Journal of</span>
-<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a>Social Psychology*), freely available on</span>
-<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">OSF</span><span class="co">](https://osf.io/p7fzb/)</span>. Agency words capture achievement,</span>
-<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a>independence, and competence (e.g. *achieve*, *confident*,</span>
-<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a>*independent*); communion words capture warmth, relationships, and</span>
-<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a>care (e.g. *caring*, *family*, *support*). Instead of predicting</span>
-<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a>gender from the text, we use them descriptively — to measure whether</span>
-<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a>female and male Nobel biographies differ in how agentic or communal</span>
-<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a>their language is.</span>
-<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `agency_dictionary.txt`</span><span class="co">](../data/agency_dictionary.txt)</span>{.btn .btn-outline-primary role="button" download="agency_dictionary.txt"}</span>
-<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `communion_dictionary.txt`</span><span class="co">](../data/communion_dictionary.txt)</span>{.btn .btn-outline-primary role="button" download="communion_dictionary.txt"}</span>
-<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: dictionary-agency-communion</span></span>
-<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
+<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a>Naive Bayes (NB) is a simple yet effective probabilistic classifier</span>
+<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a>based on Bayes' Theorem. It predicts the most likely class of data by</span>
+<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a>comparing the probabilities of each class given the observed features.</span>
+<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a>The "naive" assumption is that all features are conditionally</span>
+<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a>independent given the class, which simplifies computation. Naive Bayes</span>
+<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a>is widely used in high-dimensional tasks such as text classification.</span>
+<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a>In plain terms: given some conditions, it answers "which outcome is</span>
+<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a>most probable?" For example, given that the weather is rainy and the</span>
+<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a>temperature is 6 degrees, Naive Bayes can estimate the probability</span>
+<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a>that someone will (or will not) play golf, and classify accordingly.</span>
+<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: naive-bayes</span></span>
+<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"gender"</span>))</span>
+<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
+<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
+<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
+<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"gender"</span>)</span>
+<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a>confusion_test</span>
+<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
-<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
-<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a><span class="co"># Agency &amp; Communion dictionary (Pietraszkiewicz et al. 2019, https://osf.io/p7fzb/)</span></span>
-<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a>agency_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/agency_dictionary.txt"</span>)</span>
-<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a>communion_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/communion_dictionary.txt"</span>)</span>
+<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a>We can already see that in most cases the model predicted male when</span>
+<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a>the winner was actually male. That makes sense since male award</span>
+<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a>winners are highly over-represented in our data set. It'll always be</span>
+<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a>a good guess to just predict the label "male". If the target feature</span>
+<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a>is so highly skewed towards one category we're talking about class</span>
+<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a>imbalances. This is a known problem in Machine Learning. There are</span>
+<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a>several techniques how to tackle class imbalances, such as upsampling</span>
+<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a>the minority class.</span>
 <span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a>dict_agency_communion <span class="ot">&lt;-</span> <span class="fu">dictionary</span>(<span class="fu">list</span>(</span>
-<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a>  <span class="at">agency    =</span> agency_words,</span>
-<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a>  <span class="at">communion =</span> communion_words</span>
-<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a>dfm_ac <span class="ot">&lt;-</span> <span class="fu">dfm_lookup</span>(dfm_all, dict_agency_communion)</span>
-<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a><span class="co"># rate = matched words / total words in the biography. We deliberately</span></span>
-<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a><span class="co"># don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary</span></span>
-<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a><span class="co"># dfm it normalizes agency and communion counts against each other</span></span>
-<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a><span class="co"># (their relative mix), not against document length — and a biography</span></span>
-<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a><span class="co"># with zero hits in both categories would silently score (0, 0) either</span></span>
-<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a><span class="co"># way, which distorts group means since hit rates differ by gender.</span></span>
-<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="ot">&lt;-</span> <span class="fu">convert</span>(dfm_ac, <span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">doc_len =</span> <span class="fu">ntoken</span>(dfm_all)) <span class="sc">%&gt;%</span></span>
-<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">gender =</span> <span class="fu">docvars</span>(dfm_all, <span class="st">"gender"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb14-131"><a href="#cb14-131" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">agency_rate =</span> agency <span class="sc">/</span> doc_len, <span class="at">communion_rate =</span> communion <span class="sc">/</span> doc_len)</span>
+<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a><span class="fu">### Model evaluation {#model-evaluation}</span></span>
+<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a>When the model makes the prediction it can make two mistakes: it can</span>
+<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a>falsely classify instances as female, even though they were actually</span>
+<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a>male (False Positives), and it can classify instances as male even</span>
+<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a>though they were actually female (False Negatives). We have several</span>
+<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a>indicators to assess the performance of our model ([silly meme</span>
+<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a>explains it quite</span>
+<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a>well](https://www.reddit.com/r/learnmachinelearning/comments/mn1i08/a_simple_and_easytoremember_example_for_false/)).</span>
+<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a>$$Accuracy = \frac{\text{Correctly Classified}}{\text{Total Classifications}}$$</span>
+<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a>$$Precision = \frac{\text{True Positives}}{\text{False Positives} + \text{True Positives}}$$</span>
+<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a>$$Recall = \frac{\text{True Positives}}{\text{False Negatives} + \text{True Positives}}$$</span>
+<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-131"><a href="#cb14-131" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Also called Sensitivity or True Positive Rate.</span>
 <span id="cb14-132"><a href="#cb14-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-133"><a href="#cb14-133" aria-hidden="true" tabindex="-1"></a><span class="co"># compare agentic vs. communal language rate by gender</span></span>
-<span id="cb14-134"><a href="#cb14-134" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="sc">%&gt;%</span></span>
-<span id="cb14-135"><a href="#cb14-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gender) <span class="sc">%&gt;%</span></span>
-<span id="cb14-136"><a href="#cb14-136" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_agency =</span> <span class="fu">mean</span>(agency_rate), <span class="at">mean_communion =</span> <span class="fu">mean</span>(communion_rate), <span class="at">n =</span> <span class="fu">n</span>())</span>
-<span id="cb14-137"><a href="#cb14-137" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-138"><a href="#cb14-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-139"><a href="#cb14-139" aria-hidden="true" tabindex="-1"></a>**Interpretation:** female biographies score higher on *both*</span>
-<span id="cb14-140"><a href="#cb14-140" aria-hidden="true" tabindex="-1"></a>dimensions (≈2.0% of words are agency-coded, ≈2.0% communion-coded)</span>
-<span id="cb14-141"><a href="#cb14-141" aria-hidden="true" tabindex="-1"></a>than male biographies (≈1.4% agency, ≈1.8% communion) — so female</span>
-<span id="cb14-142"><a href="#cb14-142" aria-hidden="true" tabindex="-1"></a>bios use more trait-coded language overall, not specifically more</span>
-<span id="cb14-143"><a href="#cb14-143" aria-hidden="true" tabindex="-1"></a>agentic language relative to communal. Male biographies lean more</span>
-<span id="cb14-144"><a href="#cb14-144" aria-hidden="true" tabindex="-1"></a>communal than agentic among what coded language they do have. Two</span>
-<span id="cb14-145"><a href="#cb14-145" aria-hidden="true" tabindex="-1"></a>caveats before reading too much into this: (1) only 47 of the 1,047</span>
-<span id="cb14-146"><a href="#cb14-146" aria-hidden="true" tabindex="-1"></a>biographies are female, so the female estimate is noisy — check</span>
-<span id="cb14-147"><a href="#cb14-147" aria-hidden="true" tabindex="-1"></a>whether the difference holds up under a significance test (e.g. a</span>
-<span id="cb14-148"><a href="#cb14-148" aria-hidden="true" tabindex="-1"></a>t-test or bootstrap CI) before treating it as a real effect; (2) about</span>
-<span id="cb14-149"><a href="#cb14-149" aria-hidden="true" tabindex="-1"></a>23% of male biographies (vs. 11% of female ones) have zero matches in</span>
-<span id="cb14-150"><a href="#cb14-150" aria-hidden="true" tabindex="-1"></a>either dictionary at all, typically the shortest, most generic</span>
-<span id="cb14-151"><a href="#cb14-151" aria-hidden="true" tabindex="-1"></a>summaries — worth checking whether that's driving part of the gap.</span>
-<span id="cb14-152"><a href="#cb14-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-153"><a href="#cb14-153" aria-hidden="true" tabindex="-1"></a><span class="fu">### Naive Bayes Classification</span></span>
-<span id="cb14-154"><a href="#cb14-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-155"><a href="#cb14-155" aria-hidden="true" tabindex="-1"></a>Naive Bayes (NB) is a simple yet effective probabilistic classifier</span>
-<span id="cb14-156"><a href="#cb14-156" aria-hidden="true" tabindex="-1"></a>based on Bayes' Theorem. It predicts the most likely class of data by</span>
-<span id="cb14-157"><a href="#cb14-157" aria-hidden="true" tabindex="-1"></a>comparing the probabilities of each class given the observed features.</span>
-<span id="cb14-158"><a href="#cb14-158" aria-hidden="true" tabindex="-1"></a>The "naive" assumption is that all features are conditionally</span>
-<span id="cb14-159"><a href="#cb14-159" aria-hidden="true" tabindex="-1"></a>independent given the class, which simplifies computation. Naive Bayes</span>
-<span id="cb14-160"><a href="#cb14-160" aria-hidden="true" tabindex="-1"></a>is widely used in high-dimensional tasks such as text classification.</span>
-<span id="cb14-161"><a href="#cb14-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-162"><a href="#cb14-162" aria-hidden="true" tabindex="-1"></a>In plain terms: given some conditions, it answers "which outcome is</span>
-<span id="cb14-163"><a href="#cb14-163" aria-hidden="true" tabindex="-1"></a>most probable?" For example, given that the weather is rainy and the</span>
-<span id="cb14-164"><a href="#cb14-164" aria-hidden="true" tabindex="-1"></a>temperature is 6 degrees, Naive Bayes can estimate the probability</span>
-<span id="cb14-165"><a href="#cb14-165" aria-hidden="true" tabindex="-1"></a>that someone will (or will not) play golf, and classify accordingly.</span>
+<span id="cb14-133"><a href="#cb14-133" aria-hidden="true" tabindex="-1"></a>$$F_1\ Score = 2 \times \frac{Precision \times Recall}{Precision + Recall}$$</span>
+<span id="cb14-134"><a href="#cb14-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-135"><a href="#cb14-135" aria-hidden="true" tabindex="-1"></a><span class="fu">### Task</span></span>
+<span id="cb14-136"><a href="#cb14-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-137"><a href="#cb14-137" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Any idea why do we have so many different measurements? Why are we</span>
+<span id="cb14-138"><a href="#cb14-138" aria-hidden="true" tabindex="-1"></a>  interested in the rate of true positives and true negatives</span>
+<span id="cb14-139"><a href="#cb14-139" aria-hidden="true" tabindex="-1"></a>  separately?</span>
+<span id="cb14-140"><a href="#cb14-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-143"><a href="#cb14-143" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-144"><a href="#cb14-144" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: confusion-matrix</span></span>
+<span id="cb14-145"><a href="#cb14-145" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb14-146"><a href="#cb14-146" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
+<span id="cb14-147"><a href="#cb14-147" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"female"</span>)</span>
+<span id="cb14-148"><a href="#cb14-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-149"><a href="#cb14-149" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span>
+<span id="cb14-150"><a href="#cb14-150" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-151"><a href="#cb14-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-152"><a href="#cb14-152" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Why is our true negative rate zero?</span>
+<span id="cb14-153"><a href="#cb14-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-154"><a href="#cb14-154" aria-hidden="true" tabindex="-1"></a><span class="fu">### Task</span></span>
+<span id="cb14-155"><a href="#cb14-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-156"><a href="#cb14-156" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Can we build a predictor for STEM vs. non-STEM prices?</span>
+<span id="cb14-157"><a href="#cb14-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-160"><a href="#cb14-160" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-161"><a href="#cb14-161" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: stem-classifier</span></span>
+<span id="cb14-162"><a href="#cb14-162" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb14-163"><a href="#cb14-163" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Show solution"</span></span>
+<span id="cb14-164"><a href="#cb14-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-165"><a href="#cb14-165" aria-hidden="true" tabindex="-1"></a>clean_text_data<span class="sc">$</span>stem <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(clean_text_data<span class="sc">$</span>category <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Chemistry"</span>, <span class="st">"Physiologyor Medicine"</span>, <span class="st">"Medicine"</span>, <span class="st">"Physics"</span>), <span class="st">"STEM"</span>, <span class="st">"non-STEM"</span>)</span>
 <span id="cb14-166"><a href="#cb14-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-169"><a href="#cb14-169" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-170"><a href="#cb14-170" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: naive-bayes</span></span>
-<span id="cb14-171"><a href="#cb14-171" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"gender"</span>))</span>
-<span id="cb14-172"><a href="#cb14-172" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
-<span id="cb14-173"><a href="#cb14-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-174"><a href="#cb14-174" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
-<span id="cb14-175"><a href="#cb14-175" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
-<span id="cb14-176"><a href="#cb14-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-177"><a href="#cb14-177" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
-<span id="cb14-178"><a href="#cb14-178" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
-<span id="cb14-179"><a href="#cb14-179" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"gender"</span>)</span>
-<span id="cb14-180"><a href="#cb14-180" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-181"><a href="#cb14-181" aria-hidden="true" tabindex="-1"></a>confusion_test</span>
-<span id="cb14-182"><a href="#cb14-182" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-167"><a href="#cb14-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-168"><a href="#cb14-168" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
+<span id="cb14-169"><a href="#cb14-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-170"><a href="#cb14-170" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-171"><a href="#cb14-171" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
+<span id="cb14-172"><a href="#cb14-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-173"><a href="#cb14-173" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
+<span id="cb14-174"><a href="#cb14-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-175"><a href="#cb14-175" aria-hidden="true" tabindex="-1"></a>dfm_train <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, train)</span>
+<span id="cb14-176"><a href="#cb14-176" aria-hidden="true" tabindex="-1"></a>dfm_test  <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, <span class="sc">!</span>train)</span>
+<span id="cb14-177"><a href="#cb14-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-178"><a href="#cb14-178" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"stem"</span>))</span>
+<span id="cb14-179"><a href="#cb14-179" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
+<span id="cb14-180"><a href="#cb14-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-181"><a href="#cb14-181" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb14-182"><a href="#cb14-182" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
 <span id="cb14-183"><a href="#cb14-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-184"><a href="#cb14-184" aria-hidden="true" tabindex="-1"></a>We can already see that in most cases the model predicted male when</span>
-<span id="cb14-185"><a href="#cb14-185" aria-hidden="true" tabindex="-1"></a>the winner was actually male. That makes sense since male award</span>
-<span id="cb14-186"><a href="#cb14-186" aria-hidden="true" tabindex="-1"></a>winners are highly over-represented in our data set. It'll always be</span>
-<span id="cb14-187"><a href="#cb14-187" aria-hidden="true" tabindex="-1"></a>a good guess to just predict the label "male". If the target feature</span>
-<span id="cb14-188"><a href="#cb14-188" aria-hidden="true" tabindex="-1"></a>is so highly skewed towards one category we're talking about class</span>
-<span id="cb14-189"><a href="#cb14-189" aria-hidden="true" tabindex="-1"></a>imbalances. This is a known problem in Machine Learning. There are</span>
-<span id="cb14-190"><a href="#cb14-190" aria-hidden="true" tabindex="-1"></a>several techniques how to tackle class imbalances, such as upsampling</span>
-<span id="cb14-191"><a href="#cb14-191" aria-hidden="true" tabindex="-1"></a>the minority class.</span>
+<span id="cb14-184"><a href="#cb14-184" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb14-185"><a href="#cb14-185" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
+<span id="cb14-186"><a href="#cb14-186" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"stem"</span>)</span>
+<span id="cb14-187"><a href="#cb14-187" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-188"><a href="#cb14-188" aria-hidden="true" tabindex="-1"></a>confusion_test</span>
+<span id="cb14-189"><a href="#cb14-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-190"><a href="#cb14-190" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
+<span id="cb14-191"><a href="#cb14-191" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"STEM"</span>)</span>
 <span id="cb14-192"><a href="#cb14-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a><span class="fu">### Model evaluation {#model-evaluation}</span></span>
-<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a>When the model makes the prediction it can make two mistakes: it can</span>
-<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a>falsely classify instances as female, even though they were actually</span>
-<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a>male (False Positives), and it can classify instances as male even</span>
-<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a>though they were actually female (False Negatives). We have several</span>
-<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a>indicators to assess the performance of our model ([silly meme</span>
-<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a>explains it quite</span>
-<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a>well](https://www.reddit.com/r/learnmachinelearning/comments/mn1i08/a_simple_and_easytoremember_example_for_false/)).</span>
-<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a>$$Accuracy = \frac{\text{Correctly Classified}}{\text{Total Classifications}}$$</span>
-<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a>$$Precision = \frac{\text{True Positives}}{\text{False Positives} + \text{True Positives}}$$</span>
-<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a>$$Recall = \frac{\text{True Positives}}{\text{False Negatives} + \text{True Positives}}$$</span>
-<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-209"><a href="#cb14-209" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Also called Sensitivity or True Positive Rate.</span>
-<span id="cb14-210"><a href="#cb14-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-211"><a href="#cb14-211" aria-hidden="true" tabindex="-1"></a>$$F_1\ Score = 2 \times \frac{Precision \times Recall}{Precision + Recall}$$</span>
-<span id="cb14-212"><a href="#cb14-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-213"><a href="#cb14-213" aria-hidden="true" tabindex="-1"></a><span class="fu">### Task</span></span>
-<span id="cb14-214"><a href="#cb14-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-215"><a href="#cb14-215" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Any idea why do we have so many different measurements? Why are we</span>
-<span id="cb14-216"><a href="#cb14-216" aria-hidden="true" tabindex="-1"></a>  interested in the rate of true positives and true negatives</span>
-<span id="cb14-217"><a href="#cb14-217" aria-hidden="true" tabindex="-1"></a>  separately?</span>
-<span id="cb14-218"><a href="#cb14-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-221"><a href="#cb14-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-222"><a href="#cb14-222" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: confusion-matrix</span></span>
-<span id="cb14-223"><a href="#cb14-223" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
-<span id="cb14-224"><a href="#cb14-224" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
-<span id="cb14-225"><a href="#cb14-225" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"female"</span>)</span>
+<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span>
+<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a><span class="fu">## Dictionaries</span></span>
+<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a>Dictionaries have frequently been used in text analysis. A dictionary</span>
+<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a>is a predefined list of words that are associated with specific</span>
+<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a>categories or sentiments. Each word in the dictionary is assigned to</span>
+<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a>one or more categories, allowing for the classification of text based</span>
+<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a>on the presence of these words.</span>
+<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a>We use the **Agency** (194 words) and **Communion** (186 words)</span>
+<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a>dictionaries from Pietraszkiewicz, Formanowicz, Gustafsson Sendén,</span>
+<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a>Boyd, Sikström &amp; Sczesny (2019), ["The Big Two Dictionaries: Capturing</span>
+<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a>Agency and Communion in Natural</span>
+<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a>Language"](https://doi.org/10.1002/ejsp.2561) (*European Journal of</span>
+<span id="cb14-209"><a href="#cb14-209" aria-hidden="true" tabindex="-1"></a>Social Psychology*), freely available on</span>
+<span id="cb14-210"><a href="#cb14-210" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">OSF</span><span class="co">](https://osf.io/p7fzb/)</span>. Agency words capture achievement,</span>
+<span id="cb14-211"><a href="#cb14-211" aria-hidden="true" tabindex="-1"></a>independence, and competence (e.g. *achieve*, *confident*,</span>
+<span id="cb14-212"><a href="#cb14-212" aria-hidden="true" tabindex="-1"></a>*independent*); communion words capture warmth, relationships, and</span>
+<span id="cb14-213"><a href="#cb14-213" aria-hidden="true" tabindex="-1"></a>care (e.g. *caring*, *family*, *support*). Instead of predicting</span>
+<span id="cb14-214"><a href="#cb14-214" aria-hidden="true" tabindex="-1"></a>gender from the text, we use them descriptively — to measure whether</span>
+<span id="cb14-215"><a href="#cb14-215" aria-hidden="true" tabindex="-1"></a>female and male Nobel biographies differ in how agentic or communal</span>
+<span id="cb14-216"><a href="#cb14-216" aria-hidden="true" tabindex="-1"></a>their language is.</span>
+<span id="cb14-217"><a href="#cb14-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-218"><a href="#cb14-218" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `agency_dictionary.txt`</span><span class="co">](../data/agency_dictionary.txt)</span>{.btn .btn-outline-primary role="button" download="agency_dictionary.txt"}</span>
+<span id="cb14-219"><a href="#cb14-219" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">⬇ Download `communion_dictionary.txt`</span><span class="co">](../data/communion_dictionary.txt)</span>{.btn .btn-outline-primary role="button" download="communion_dictionary.txt"}</span>
+<span id="cb14-220"><a href="#cb14-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-223"><a href="#cb14-223" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-224"><a href="#cb14-224" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: dictionary-agency-communion</span></span>
+<span id="cb14-225"><a href="#cb14-225" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
 <span id="cb14-226"><a href="#cb14-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-227"><a href="#cb14-227" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span>
-<span id="cb14-228"><a href="#cb14-228" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-227"><a href="#cb14-227" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-228"><a href="#cb14-228" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
 <span id="cb14-229"><a href="#cb14-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-230"><a href="#cb14-230" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Why is our true negative rate zero?</span>
+<span id="cb14-230"><a href="#cb14-230" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
 <span id="cb14-231"><a href="#cb14-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-232"><a href="#cb14-232" aria-hidden="true" tabindex="-1"></a><span class="fu">### Task</span></span>
-<span id="cb14-233"><a href="#cb14-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-234"><a href="#cb14-234" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Can we build a predictor for STEM vs. non-STEM prices?</span>
+<span id="cb14-232"><a href="#cb14-232" aria-hidden="true" tabindex="-1"></a><span class="co"># Agency &amp; Communion dictionary (Pietraszkiewicz et al. 2019, https://osf.io/p7fzb/)</span></span>
+<span id="cb14-233"><a href="#cb14-233" aria-hidden="true" tabindex="-1"></a>agency_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/agency_dictionary.txt"</span>)</span>
+<span id="cb14-234"><a href="#cb14-234" aria-hidden="true" tabindex="-1"></a>communion_words <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../data/communion_dictionary.txt"</span>)</span>
 <span id="cb14-235"><a href="#cb14-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-238"><a href="#cb14-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-239"><a href="#cb14-239" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: stem-classifier</span></span>
-<span id="cb14-240"><a href="#cb14-240" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb14-241"><a href="#cb14-241" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Show solution"</span></span>
+<span id="cb14-236"><a href="#cb14-236" aria-hidden="true" tabindex="-1"></a>dict_agency_communion <span class="ot">&lt;-</span> <span class="fu">dictionary</span>(<span class="fu">list</span>(</span>
+<span id="cb14-237"><a href="#cb14-237" aria-hidden="true" tabindex="-1"></a>  <span class="at">agency    =</span> agency_words,</span>
+<span id="cb14-238"><a href="#cb14-238" aria-hidden="true" tabindex="-1"></a>  <span class="at">communion =</span> communion_words</span>
+<span id="cb14-239"><a href="#cb14-239" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb14-240"><a href="#cb14-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-241"><a href="#cb14-241" aria-hidden="true" tabindex="-1"></a>dfm_ac <span class="ot">&lt;-</span> <span class="fu">dfm_lookup</span>(dfm_all, dict_agency_communion)</span>
 <span id="cb14-242"><a href="#cb14-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-243"><a href="#cb14-243" aria-hidden="true" tabindex="-1"></a>clean_text_data<span class="sc">$</span>stem <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(clean_text_data<span class="sc">$</span>category <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Chemistry"</span>, <span class="st">"Physiologyor Medicine"</span>, <span class="st">"Medicine"</span>, <span class="st">"Physics"</span>), <span class="st">"STEM"</span>, <span class="st">"non-STEM"</span>)</span>
-<span id="cb14-244"><a href="#cb14-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-245"><a href="#cb14-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-246"><a href="#cb14-246" aria-hidden="true" tabindex="-1"></a>corp <span class="ot">&lt;-</span> <span class="fu">corpus</span>(clean_text_data, <span class="at">text_field =</span> <span class="st">"extract"</span>, <span class="at">docnames =</span> <span class="st">"pageid"</span>)</span>
-<span id="cb14-247"><a href="#cb14-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-248"><a href="#cb14-248" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span> <span class="fu">tokens</span>(corp, <span class="at">remove_punct =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-249"><a href="#cb14-249" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tokens_tolower</span>()</span>
-<span id="cb14-250"><a href="#cb14-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-251"><a href="#cb14-251" aria-hidden="true" tabindex="-1"></a>dfm_all <span class="ot">&lt;-</span> <span class="fu">dfm</span>(toks)</span>
-<span id="cb14-252"><a href="#cb14-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-253"><a href="#cb14-253" aria-hidden="true" tabindex="-1"></a>dfm_train <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, train)</span>
-<span id="cb14-254"><a href="#cb14-254" aria-hidden="true" tabindex="-1"></a>dfm_test  <span class="ot">&lt;-</span> <span class="fu">dfm_subset</span>(dfm_all, <span class="sc">!</span>train)</span>
-<span id="cb14-255"><a href="#cb14-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-256"><a href="#cb14-256" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">docvars</span>(dfm_train, <span class="st">"stem"</span>))</span>
-<span id="cb14-257"><a href="#cb14-257" aria-hidden="true" tabindex="-1"></a>nb_train <span class="ot">&lt;-</span> <span class="fu">textmodel_nb</span>(<span class="at">x =</span> dfm_train, <span class="at">y =</span> y, <span class="at">prior =</span> <span class="st">"docfreq"</span>)</span>
-<span id="cb14-258"><a href="#cb14-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-259"><a href="#cb14-259" aria-hidden="true" tabindex="-1"></a>class_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb_train, <span class="at">newdata =</span> dfm_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
-<span id="cb14-260"><a href="#cb14-260" aria-hidden="true" tabindex="-1"></a><span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>)  <span class="ot">&lt;-</span> class_test</span>
-<span id="cb14-261"><a href="#cb14-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-262"><a href="#cb14-262" aria-hidden="true" tabindex="-1"></a>confusion_test <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
-<span id="cb14-263"><a href="#cb14-263" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"pred_nb"</span>),</span>
-<span id="cb14-264"><a href="#cb14-264" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth     =</span> <span class="fu">docvars</span>(dfm_test, <span class="st">"stem"</span>)</span>
-<span id="cb14-265"><a href="#cb14-265" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-266"><a href="#cb14-266" aria-hidden="true" tabindex="-1"></a>confusion_test</span>
-<span id="cb14-267"><a href="#cb14-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-268"><a href="#cb14-268" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(confusion_test,</span>
-<span id="cb14-269"><a href="#cb14-269" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">positive =</span> <span class="st">"STEM"</span>)</span>
-<span id="cb14-270"><a href="#cb14-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-271"><a href="#cb14-271" aria-hidden="true" tabindex="-1"></a>confusion_test_statistics</span>
-<span id="cb14-272"><a href="#cb14-272" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-243"><a href="#cb14-243" aria-hidden="true" tabindex="-1"></a><span class="co"># rate = matched words / total words in the biography. We deliberately</span></span>
+<span id="cb14-244"><a href="#cb14-244" aria-hidden="true" tabindex="-1"></a><span class="co"># don't use dfm_weight(scheme = "prop") here: on a 2-column dictionary</span></span>
+<span id="cb14-245"><a href="#cb14-245" aria-hidden="true" tabindex="-1"></a><span class="co"># dfm it normalizes agency and communion counts against each other</span></span>
+<span id="cb14-246"><a href="#cb14-246" aria-hidden="true" tabindex="-1"></a><span class="co"># (their relative mix), not against document length — and a biography</span></span>
+<span id="cb14-247"><a href="#cb14-247" aria-hidden="true" tabindex="-1"></a><span class="co"># with zero hits in both categories would silently score (0, 0) either</span></span>
+<span id="cb14-248"><a href="#cb14-248" aria-hidden="true" tabindex="-1"></a><span class="co"># way, which distorts group means since hit rates differ by gender.</span></span>
+<span id="cb14-249"><a href="#cb14-249" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="ot">&lt;-</span> <span class="fu">convert</span>(dfm_ac, <span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-250"><a href="#cb14-250" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">doc_len =</span> <span class="fu">ntoken</span>(dfm_all)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-251"><a href="#cb14-251" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">gender =</span> <span class="fu">docvars</span>(dfm_all, <span class="st">"gender"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-252"><a href="#cb14-252" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">agency_rate =</span> agency <span class="sc">/</span> doc_len, <span class="at">communion_rate =</span> communion <span class="sc">/</span> doc_len)</span>
+<span id="cb14-253"><a href="#cb14-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-254"><a href="#cb14-254" aria-hidden="true" tabindex="-1"></a><span class="co"># compare agentic vs. communal language rate by gender</span></span>
+<span id="cb14-255"><a href="#cb14-255" aria-hidden="true" tabindex="-1"></a>ac_by_doc <span class="sc">%&gt;%</span></span>
+<span id="cb14-256"><a href="#cb14-256" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gender) <span class="sc">%&gt;%</span></span>
+<span id="cb14-257"><a href="#cb14-257" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_agency =</span> <span class="fu">mean</span>(agency_rate), <span class="at">mean_communion =</span> <span class="fu">mean</span>(communion_rate), <span class="at">n =</span> <span class="fu">n</span>())</span>
+<span id="cb14-258"><a href="#cb14-258" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-259"><a href="#cb14-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-260"><a href="#cb14-260" aria-hidden="true" tabindex="-1"></a>**Interpretation:** female biographies score higher on *both*</span>
+<span id="cb14-261"><a href="#cb14-261" aria-hidden="true" tabindex="-1"></a>dimensions (≈2.0% of words are agency-coded, ≈2.0% communion-coded)</span>
+<span id="cb14-262"><a href="#cb14-262" aria-hidden="true" tabindex="-1"></a>than male biographies (≈1.4% agency, ≈1.8% communion) — so female</span>
+<span id="cb14-263"><a href="#cb14-263" aria-hidden="true" tabindex="-1"></a>bios use more trait-coded language overall, not specifically more</span>
+<span id="cb14-264"><a href="#cb14-264" aria-hidden="true" tabindex="-1"></a>agentic language relative to communal. Male biographies lean more</span>
+<span id="cb14-265"><a href="#cb14-265" aria-hidden="true" tabindex="-1"></a>communal than agentic among what coded language they do have. Two</span>
+<span id="cb14-266"><a href="#cb14-266" aria-hidden="true" tabindex="-1"></a>caveats before reading too much into this: (1) only 47 of the 1,047</span>
+<span id="cb14-267"><a href="#cb14-267" aria-hidden="true" tabindex="-1"></a>biographies are female, so the female estimate is noisy — check</span>
+<span id="cb14-268"><a href="#cb14-268" aria-hidden="true" tabindex="-1"></a>whether the difference holds up under a significance test (e.g. a</span>
+<span id="cb14-269"><a href="#cb14-269" aria-hidden="true" tabindex="-1"></a>t-test or bootstrap CI) before treating it as a real effect; (2) about</span>
+<span id="cb14-270"><a href="#cb14-270" aria-hidden="true" tabindex="-1"></a>23% of male biographies (vs. 11% of female ones) have zero matches in</span>
+<span id="cb14-271"><a href="#cb14-271" aria-hidden="true" tabindex="-1"></a>either dictionary at all, typically the shortest, most generic</span>
+<span id="cb14-272"><a href="#cb14-272" aria-hidden="true" tabindex="-1"></a>summaries — worth checking whether that's driving part of the gap.</span>
 <span id="cb14-273"><a href="#cb14-273" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-274"><a href="#cb14-274" aria-hidden="true" tabindex="-1"></a><span class="fu">## Word Embeddings</span></span>
 <span id="cb14-275"><a href="#cb14-275" aria-hidden="true" tabindex="-1"></a></span>
@@ -1616,54 +1617,58 @@ window.Quarto = {
 <span id="cb14-534"><a href="#cb14-534" aria-hidden="true" tabindex="-1"></a>leverage the power of LLMs without needing extensive infrastructure</span>
 <span id="cb14-535"><a href="#cb14-535" aria-hidden="true" tabindex="-1"></a>or cloud services.</span>
 <span id="cb14-536"><a href="#cb14-536" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-539"><a href="#cb14-539" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-540"><a href="#cb14-540" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rollama-setup</span></span>
-<span id="cb14-541"><a href="#cb14-541" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rollama)</span>
-<span id="cb14-542"><a href="#cb14-542" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-543"><a href="#cb14-543" aria-hidden="true" tabindex="-1"></a><span class="co"># available models you have installed locally</span></span>
-<span id="cb14-544"><a href="#cb14-544" aria-hidden="true" tabindex="-1"></a><span class="fu">list_models</span>()</span>
-<span id="cb14-545"><a href="#cb14-545" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-546"><a href="#cb14-546" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
-<span id="cb14-547"><a href="#cb14-547" aria-hidden="true" tabindex="-1"></a><span class="co"># pull_model("mistral:7B") # download a model</span></span>
-<span id="cb14-548"><a href="#cb14-548" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-549"><a href="#cb14-549" aria-hidden="true" tabindex="-1"></a><span class="fu">ping_ollama</span>() <span class="co"># let's check if it is there</span></span>
-<span id="cb14-550"><a href="#cb14-550" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-551"><a href="#cb14-551" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-552"><a href="#cb14-552" aria-hidden="true" tabindex="-1"></a>System and user prompts are core components of prompt engineering. A</span>
-<span id="cb14-553"><a href="#cb14-553" aria-hidden="true" tabindex="-1"></a>system prompt provides foundational instructions to the model, such</span>
-<span id="cb14-554"><a href="#cb14-554" aria-hidden="true" tabindex="-1"></a>as assigning a role ("You are a research assistant" or "You are an</span>
-<span id="cb14-555"><a href="#cb14-555" aria-hidden="true" tabindex="-1"></a>expert in X") and specifying constraints (e.g., ethical guidelines,</span>
-<span id="cb14-556"><a href="#cb14-556" aria-hidden="true" tabindex="-1"></a>style, or behavior). System prompts are typically consistent across</span>
-<span id="cb14-557"><a href="#cb14-557" aria-hidden="true" tabindex="-1"></a>many users or sessions. In contrast, a user prompt contains</span>
-<span id="cb14-558"><a href="#cb14-558" aria-hidden="true" tabindex="-1"></a>task-specific instructions, such as "Classify these sentences into</span>
-<span id="cb14-559"><a href="#cb14-559" aria-hidden="true" tabindex="-1"></a>categories," and may include additional context or examples to help</span>
-<span id="cb14-560"><a href="#cb14-560" aria-hidden="true" tabindex="-1"></a>the model perform the task effectively.</span>
-<span id="cb14-561"><a href="#cb14-561" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-562"><a href="#cb14-562" aria-hidden="true" tabindex="-1"></a>We'll try out zero shot learning first: We first need a some text.</span>
-<span id="cb14-563"><a href="#cb14-563" aria-hidden="true" tabindex="-1"></a>Then we construct the prompt and send it to the model.</span>
-<span id="cb14-564"><a href="#cb14-564" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-567"><a href="#cb14-567" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-568"><a href="#cb14-568" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rollama-query</span></span>
-<span id="cb14-569"><a href="#cb14-569" aria-hidden="true" tabindex="-1"></a><span class="co"># We can simply talk to the model</span></span>
-<span id="cb14-570"><a href="#cb14-570" aria-hidden="true" tabindex="-1"></a>rollama<span class="sc">::</span><span class="fu">query</span>(<span class="st">"What is the capital of New York"</span>, <span class="at">model =</span> <span class="st">"llama3.1"</span>)</span>
-<span id="cb14-571"><a href="#cb14-571" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-572"><a href="#cb14-572" aria-hidden="true" tabindex="-1"></a><span class="co"># lets construct the query</span></span>
-<span id="cb14-573"><a href="#cb14-573" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-574"><a href="#cb14-574" aria-hidden="true" tabindex="-1"></a><span class="co"># Therefore we need a system message and a user prompt template.</span></span>
-<span id="cb14-575"><a href="#cb14-575" aria-hidden="true" tabindex="-1"></a><span class="co"># A system message usually starts with a role we're assigning.</span></span>
-<span id="cb14-576"><a href="#cb14-576" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-577"><a href="#cb14-577" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>zero <span class="ot">&lt;-</span> <span class="cn">NA_character_</span></span>
-<span id="cb14-578"><a href="#cb14-578" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-579"><a href="#cb14-579" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
-<span id="cb14-580"><a href="#cb14-580" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(i)</span>
-<span id="cb14-581"><a href="#cb14-581" aria-hidden="true" tabindex="-1"></a>  question <span class="ot">&lt;-</span> <span class="st">"Task: You're a research assistant that helps to analyze texts. Your aim is to classify whether the summary of a biographie describes a female or a male nobel price winner."</span></span>
-<span id="cb14-582"><a href="#cb14-582" aria-hidden="true" tabindex="-1"></a>  text <span class="ot">&lt;-</span> df<span class="sc">$</span>extract[i]</span>
-<span id="cb14-583"><a href="#cb14-583" aria-hidden="true" tabindex="-1"></a>  question <span class="ot">&lt;-</span> <span class="fu">paste</span>(question, text)</span>
-<span id="cb14-584"><a href="#cb14-584" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">query</span>(question, <span class="at">model =</span><span class="st">"llama3.1"</span>)</span>
-<span id="cb14-585"><a href="#cb14-585" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(result)</span>
-<span id="cb14-586"><a href="#cb14-586" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>zero[i] <span class="ot">&lt;-</span> result[[<span class="dv">1</span>]]<span class="sc">$</span>message<span class="sc">$</span>content</span>
-<span id="cb14-587"><a href="#cb14-587" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb14-588"><a href="#cb14-588" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-537"><a href="#cb14-537" aria-hidden="true" tabindex="-1"></a>Before running the code below, install Ollama itself (the <span class="in">`rollama`</span></span>
+<span id="cb14-538"><a href="#cb14-538" aria-hidden="true" tabindex="-1"></a>package just talks to it): <span class="co">[</span><span class="ot">download for Windows</span><span class="co">](https://ollama.com/download/windows)</span></span>
+<span id="cb14-539"><a href="#cb14-539" aria-hidden="true" tabindex="-1"></a>(macOS and Linux installers are on the same <span class="co">[</span><span class="ot">download page</span><span class="co">](https://ollama.com/download)</span>).</span>
+<span id="cb14-540"><a href="#cb14-540" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-543"><a href="#cb14-543" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-544"><a href="#cb14-544" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rollama-setup</span></span>
+<span id="cb14-545"><a href="#cb14-545" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rollama)</span>
+<span id="cb14-546"><a href="#cb14-546" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-547"><a href="#cb14-547" aria-hidden="true" tabindex="-1"></a><span class="co"># available models you have installed locally</span></span>
+<span id="cb14-548"><a href="#cb14-548" aria-hidden="true" tabindex="-1"></a><span class="fu">list_models</span>()</span>
+<span id="cb14-549"><a href="#cb14-549" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-550"><a href="#cb14-550" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb14-551"><a href="#cb14-551" aria-hidden="true" tabindex="-1"></a><span class="co"># pull_model("mistral:7B") # download a model</span></span>
+<span id="cb14-552"><a href="#cb14-552" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-553"><a href="#cb14-553" aria-hidden="true" tabindex="-1"></a><span class="fu">ping_ollama</span>() <span class="co"># let's check if it is there</span></span>
+<span id="cb14-554"><a href="#cb14-554" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-555"><a href="#cb14-555" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-556"><a href="#cb14-556" aria-hidden="true" tabindex="-1"></a>System and user prompts are core components of prompt engineering. A</span>
+<span id="cb14-557"><a href="#cb14-557" aria-hidden="true" tabindex="-1"></a>system prompt provides foundational instructions to the model, such</span>
+<span id="cb14-558"><a href="#cb14-558" aria-hidden="true" tabindex="-1"></a>as assigning a role ("You are a research assistant" or "You are an</span>
+<span id="cb14-559"><a href="#cb14-559" aria-hidden="true" tabindex="-1"></a>expert in X") and specifying constraints (e.g., ethical guidelines,</span>
+<span id="cb14-560"><a href="#cb14-560" aria-hidden="true" tabindex="-1"></a>style, or behavior). System prompts are typically consistent across</span>
+<span id="cb14-561"><a href="#cb14-561" aria-hidden="true" tabindex="-1"></a>many users or sessions. In contrast, a user prompt contains</span>
+<span id="cb14-562"><a href="#cb14-562" aria-hidden="true" tabindex="-1"></a>task-specific instructions, such as "Classify these sentences into</span>
+<span id="cb14-563"><a href="#cb14-563" aria-hidden="true" tabindex="-1"></a>categories," and may include additional context or examples to help</span>
+<span id="cb14-564"><a href="#cb14-564" aria-hidden="true" tabindex="-1"></a>the model perform the task effectively.</span>
+<span id="cb14-565"><a href="#cb14-565" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-566"><a href="#cb14-566" aria-hidden="true" tabindex="-1"></a>We'll try out zero shot learning first: We first need a some text.</span>
+<span id="cb14-567"><a href="#cb14-567" aria-hidden="true" tabindex="-1"></a>Then we construct the prompt and send it to the model.</span>
+<span id="cb14-568"><a href="#cb14-568" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-571"><a href="#cb14-571" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-572"><a href="#cb14-572" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rollama-query</span></span>
+<span id="cb14-573"><a href="#cb14-573" aria-hidden="true" tabindex="-1"></a><span class="co"># We can simply talk to the model</span></span>
+<span id="cb14-574"><a href="#cb14-574" aria-hidden="true" tabindex="-1"></a>rollama<span class="sc">::</span><span class="fu">query</span>(<span class="st">"What is the capital of New York"</span>, <span class="at">model =</span> <span class="st">"llama3.1"</span>)</span>
+<span id="cb14-575"><a href="#cb14-575" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-576"><a href="#cb14-576" aria-hidden="true" tabindex="-1"></a><span class="co"># lets construct the query</span></span>
+<span id="cb14-577"><a href="#cb14-577" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-578"><a href="#cb14-578" aria-hidden="true" tabindex="-1"></a><span class="co"># Therefore we need a system message and a user prompt template.</span></span>
+<span id="cb14-579"><a href="#cb14-579" aria-hidden="true" tabindex="-1"></a><span class="co"># A system message usually starts with a role we're assigning.</span></span>
+<span id="cb14-580"><a href="#cb14-580" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-581"><a href="#cb14-581" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>zero <span class="ot">&lt;-</span> <span class="cn">NA_character_</span></span>
+<span id="cb14-582"><a href="#cb14-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-583"><a href="#cb14-583" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb14-584"><a href="#cb14-584" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(i)</span>
+<span id="cb14-585"><a href="#cb14-585" aria-hidden="true" tabindex="-1"></a>  question <span class="ot">&lt;-</span> <span class="st">"Task: You're a research assistant that helps to analyze texts. Your aim is to classify whether the summary of a biographie describes a female or a male nobel price winner."</span></span>
+<span id="cb14-586"><a href="#cb14-586" aria-hidden="true" tabindex="-1"></a>  text <span class="ot">&lt;-</span> df<span class="sc">$</span>extract[i]</span>
+<span id="cb14-587"><a href="#cb14-587" aria-hidden="true" tabindex="-1"></a>  question <span class="ot">&lt;-</span> <span class="fu">paste</span>(question, text)</span>
+<span id="cb14-588"><a href="#cb14-588" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">query</span>(question, <span class="at">model =</span><span class="st">"llama3.1"</span>)</span>
+<span id="cb14-589"><a href="#cb14-589" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(result)</span>
+<span id="cb14-590"><a href="#cb14-590" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>zero[i] <span class="ot">&lt;-</span> result[[<span class="dv">1</span>]]<span class="sc">$</span>message<span class="sc">$</span>content</span>
+<span id="cb14-591"><a href="#cb14-591" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-592"><a href="#cb14-592" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
